@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation } from 'react-native';
 
 import * as firebase from 'firebase';
 
@@ -24,10 +24,16 @@ export default class LoginScreen extends React.Component {
       .catch(error => this.setState({errorMessage: error.message}));
   }
 
+  componentWillUnmount() {}
+  
     render(){
+      LayoutAnimation.easeInEaseOut();
         return (
+
           <View style={styles.container}>
             
+            <StatusBar hidden></StatusBar>
+
             <Text style={styles.logo}>PLANIT</Text>
 
             <View style={styles.errorMsg}>

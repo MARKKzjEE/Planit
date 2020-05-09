@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation } from 'react-native';
 
 import * as firebase from 'firebase';
 
@@ -30,10 +30,13 @@ export default class RegisterScreen extends React.Component {
   }
 
     render(){
+      LayoutAnimation.easeInEaseOut();
         return (
           <View style={styles.container}>
             
-            <Text style={styles.logo}>Regístrate para empezar.</Text>
+            <StatusBar hidden></StatusBar>
+
+            <Text style={styles.logo}>Regístrate para empezar!</Text>
 
             <View style={styles.errorMsg}>
               {this.state.errorMessage && <Text style={styles.error}>{this.state.errorMessage}</Text>}
