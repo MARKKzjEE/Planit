@@ -14,10 +14,11 @@ import PostScreen from './screens/PostScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
-
 import * as constants from './constants/constants'
 
 import Fire from './Fire'
+
+import Firetimerbug from './firetimerbug'
 
 /*
 // Inicializamos firebase
