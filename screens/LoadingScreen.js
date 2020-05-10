@@ -3,7 +3,8 @@ import { StyleSheet, ImageBackground, ActivityIndicator } from 'react-native';
 import { Asset } from 'expo-asset';
 import { AppLoading } from 'expo';
 
-import * as firebase from 'firebase';
+import firebase from 'firebase';
+import Fire from '../Fire'
 
 export default class LoadingScreen extends React.Component {
 
