@@ -1,11 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
-import * as firebase from 'firebase'
-
-export default class LoadingScreen extends React.Component {
-
-=======
 import { StyleSheet, ImageBackground, ActivityIndicator } from 'react-native';
 import { Asset } from 'expo-asset';
 import { AppLoading } from 'expo';
@@ -19,7 +12,6 @@ export default class LoadingScreen extends React.Component {
     isReady2: false,
   };
 
->>>>>>> dev
  componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
       this.props.navigation.navigate(user ? "App" : "Auth")
@@ -27,22 +19,6 @@ export default class LoadingScreen extends React.Component {
   }
 
   render(){
-<<<<<<< HEAD
-        return (
-            <View style={styles.container}>
-            <Text>Cargando...</Text>
-            <ActivityIndicator size="large"></ActivityIndicator>
-            </View>
-        )
-    }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-=======
     if (!this.state.isReady) {
       return (
         <AppLoading
@@ -83,6 +59,5 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: 'center',
     justifyContent: 'center'
->>>>>>> dev
   }
 });
