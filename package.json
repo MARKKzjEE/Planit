@@ -12,6 +12,10 @@
     "@react-navigation/native": "^5.2.4",
     "@react-navigation/stack": "^5.2.19",
     "expo": "~37.0.3",
+<<<<<<< HEAD
+=======
+    "expo-asset": "~8.1.4",
+>>>>>>> dev
     "firebase": "^7.14.2",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",

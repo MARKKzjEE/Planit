@@ -12,8 +12,12 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
+<<<<<<< HEAD
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
+=======
+      "resizeMode": "cover"
+>>>>>>> dev
     },
     "updates": {
       "fallbackToCacheTimeout": 0
