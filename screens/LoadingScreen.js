@@ -51,6 +51,7 @@ export default class LoadingScreen extends React.Component {
   }
 }
 
+
 const styles = StyleSheet.create({
   splashIMG: {
     flex: 1,
