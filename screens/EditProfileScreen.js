@@ -16,10 +16,10 @@ require("@firebase/firestore");
 export default class PostScreen extends React.Component {
 
     state = {
-        image: null,
         description: "",
         age: null,
-        city: ""
+        city: "",
+        avatar : ""
     }
 
     componentDidMount() {
@@ -28,16 +28,18 @@ export default class PostScreen extends React.Component {
 
     componentWillUnmount() {}
 
+    /* 1.Pedir permiso nativo para acceder a galeria (iOS y Android) */
     getPhotoPermission = async () => {
         if(Constants.platform.ios || Constants.platform.android) {
             const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
             if(status != "granted") {
-                alert("La aplicación necesita permiso para acceder a tu Galería.")
+                Alert.alert("La aplicación necesita permiso para acceder a tu Galería.")
             }
         }
     };
 
+    /* 2.Escoger imagen de galería nativa y cargarla en la DB */
     pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -46,23 +48,49 @@ export default class PostScreen extends React.Component {
         });
         if(!result.cancelled) {
             Fire.shared
-                .addPost(result.uri)
-            .then( () => {
-                Alert.alert("Imagen subida");
-                this.setState({ image: result.uri});
-            })
-            .catch((error) => {
-                Alert.alert("Error al subir la imagen")
-                console.log(error)
-            });
+                .addImage(result.uri, 'photos')
+                .then( () => {
+                    Alert.alert("Imagen subida. Confirma los cambios.");
+                    this.setState({ image: result.uri});
+                })
+                .catch((error) => {
+                    Alert.alert("Error al subir la imagen. Intentálo de nuevo.")
+                    console.log(error)
+                });
         }
     };
+
+    /* 3.Escoger imagen de galería nativa */
+    pickAvatar = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3]
+        });
+        
+        if(!result.cancelled) {
+            this.setState({avatar: result.uri})
+        }
+    };
+
+    /* 4.Actualizar información editada en la base de datos.*/
+    handleEdit = () => {
+        Fire.shared
+            .updateAvatarAndInfo(this.state.avatar, this.state.description, 'avatars')
+            .then( () => {
+                Alert.alert("Avatar actualizado");
+            })
+            .catch((error) => {
+                Alert.alert("Error al actualizar el avatar")
+                console.log(error)
+            });
+    }
 
     render(){
         return (
             <View style={styles.container}>
                 <SafeAreaView style={styles.headerContainer}>
-                    <View style={styles.header}>
+                    <TouchableOpacity onPress={this.pickAvatar} style={styles.header}>
                         <TouchableOpacity>
                             <Ionicons 
                                 name="md-arrow-back" 
@@ -71,11 +99,16 @@ export default class PostScreen extends React.Component {
                                 onPress={ () => this.props.navigation.goBack() }>
                             </Ionicons>   
                         </TouchableOpacity>
-                        <Text style={{fontWeight: "700"}}>Editar Perfil</Text>
+                            <Text style={{fontWeight: "700"}}>Editar Perfil</Text>
                         <TouchableOpacity>
-                            <Ionicons name="md-checkbox" size={23} color={constants.CORP_PINK}></Ionicons>
+                            <Ionicons 
+                                name="md-checkbox" 
+                                size={23} 
+                                color={constants.CORP_PINK}
+                                onPress={ () => this.props.navigation.goBack() }>
+                                </Ionicons>
                         </TouchableOpacity> 
-                    </View>
+                    </TouchableOpacity>
                 </SafeAreaView>
 
                 <View style={styles.personalContainer}>
@@ -95,27 +128,25 @@ export default class PostScreen extends React.Component {
                             </TextInput>
                         </View>
                     </View>
-                    <View style={styles.avatarContainer}>
-                        <Image 
-                            source={ require("../assets/tempAvatar.jpg")} 
-                            style={styles.avatar}>
-                        </Image>
+                    <TouchableOpacity onPress={this.pickAvatar} style={styles.avatarContainer}>
+                            <Image
+                                source={{uri: this.state.avatar}} 
+                                style={styles.avatar}>
+                            </Image>
+                        
                         <Text style={{color: constants.CORP_PINK, textDecorationLine: "underline", marginTop: 10}}>
                             Editar Avatar
                         </Text>
-                    </View>
-                </View>
-
-                <View style={styles.imagesContainer}>
-                    <Image source={{uri: this.state.image}} style={{height:100, width: 100}}></Image>
+                    </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity onPress={this.pickImage} style={styles.mdImages}>
                     <Ionicons 
                         name="md-images" 
-                        size={45} 
+                        size={80} 
                         color={constants.CORP_PINK}>
                     </Ionicons>
+                    <Text style={{fontWeight:"700",color:constants.CORP_PINK}}>Añade las fotos que más te gusten!</Text>
                 </TouchableOpacity>
             </View>
       );
@@ -160,7 +191,7 @@ const styles = StyleSheet.create({
         marginLeft: 25
     },
     avatarContainer: {
-        justifyContent: "flex-start"
+        marginTop: 10
     },
     avatar: {
         width: 75,
@@ -185,8 +216,13 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     mdImages: {
-        alignItems: "flex-end",
+        alignItems: "center",
+        justifyContent: "center",
         marginHorizontal: 20,
         marginBottom: 20,
+        padding: 50,
+        borderWidth: 1,
+        borderColor: constants.CORP_GREY,
+        borderRadius: 20
     }
 })

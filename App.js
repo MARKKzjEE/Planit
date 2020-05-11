@@ -109,12 +109,7 @@ const AuthStack = createStackNavigator({
   Register: {
     screen: RegisterScreen,
     navigationOptions: {
-      title: '',
-      headerStyle: {
-        elevation: 0,
-        shadowOpacity: 0,
-        borderBottomWidth: 0,
-      }
+      headerShown: false
     }
   }
 })

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, TextInput, TouchableOpacityBase, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,8 +16,7 @@ require("@firebase/firestore");
 export default class PostScreen extends React.Component {
 
     state = {
-        images: [],
-        timestamp: []
+        images: []
     }
 
     changeScreen = () => {
@@ -25,23 +24,21 @@ export default class PostScreen extends React.Component {
       }
 
     componentDidMount() {
+        this.loadImages();
     }
-
+    
+    /* 1. Cargar imágenes desde la DB */
     loadImages = async () => {
         firebase.firestore()
             .collection('posts').where('uid', '==', firebase.auth().currentUser.uid).get()
             .then((snapshot) => {
                 snapshot.forEach(doc => {
-                    //console.log(doc.id, '=>', doc.data());
-                    //console.log(doc.data().image)
                     this.setState({
-                        images: this.state.images.concat(doc.data().image),
-                        timestamp: this.state.timestamp.concat(doc.data().timestamp)
+                        images: this.state.images.concat([{url: doc.data().image, idImg: doc.id}])
                     });
-  
                 });
             })
-    }
+    };
 
     render(){
 
@@ -75,11 +72,10 @@ export default class PostScreen extends React.Component {
                 </View>
 
                 <View style={styles.imagesContainer}>
+                    {this.state.images  && this.state.images.map(item => 
+                        <Image style={styles.image} key={item.idImg} source={{uri: item.url}}></Image>
+                    )}
                 </View>
-
-                <TouchableOpacity onPress={this.loadImages}> 
-                    <Text>BOTON AUXILIAR</Text> 
-                </TouchableOpacity>
             </View>
       );
     }
@@ -144,7 +140,13 @@ const styles = StyleSheet.create({
     imagesContainer: {
         flex: 1,
         marginHorizontal: 20,
-        marginBottom: 20
+        marginBottom: 20,
+        flexDirection: "row"
+    },
+    image: {
+        height: 125,
+        width: 125,
+        marginRight: 10
     },
     mdImages: {
         alignItems: "flex-end",

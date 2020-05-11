@@ -22,7 +22,9 @@ export default class HomeScreen extends React.Component {
     firebase.auth().signOut();
   };
   
-  componentWillUnmount(){}
+  componentWillUnmount(){
+    this.props.navigation.dispatch(resetAction);
+  }
 
   render(){
 

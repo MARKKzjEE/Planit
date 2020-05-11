@@ -23,31 +23,10 @@ class Fire {
             console.log(error);
         }  
     }
+    /*1. Foto cargada en Firebase Storage*/
+    uploadPhotoAsync = async (uri, type) => {
 
-    addPost = async (localUri) => {
-        //subir imagen a BD
-        const remoteUri = await this.uploadPhotoAsync(localUri);
-        
-        //guardar uri en la tabla
-        return new Promise((res, rej) => {
-            firebase.firestore()
-                .collection("posts")
-                .add({
-                    uid: firebase.auth().currentUser.uid,
-                    timestamp: Date.now(),
-                    image: remoteUri
-                })
-                .then(ref => {
-                    res(ref)
-                })
-                .catch(error => {
-                    rej(error)
-                });
-        });
-    };
-
-    uploadPhotoAsync = async (uri) => {
-        const path = `photos/${this.uid}/${Date.now()}.jpg`
+        const path = `${type}/${this.uid}/${Date.now()}.jpg`
 
         return new Promise(async (res, rej) => {
             const response = await fetch(uri);
@@ -71,6 +50,52 @@ class Fire {
             )
         });
     };
+
+    /*2. Imagen galeria usuario cargada en Firebase Firestore*/
+    addImage = async (localUri, type) => {
+        //subir imagen a BD
+        const remoteUri = await this.uploadPhotoAsync(localUri, type);
+        
+        //guardar uri en la tabla
+        return new Promise((res, rej) => {
+            firebase.firestore()
+                .collection("gallery")
+                .add({
+                    uid: firebase.auth().currentUser.uid,
+                    timestamp: Date.now(),
+                    image: remoteUri
+                })
+                .then(ref => {
+                    res(ref)
+                })
+                .catch(error => {
+                    rej(error)
+                });
+        });
+    };
+
+    /*3. Información Editada del Perfil cargada en Firebase Firestore*/
+    updateAvatarAndInfo = async (localUri, description, type) => {
+        const remoteUri = await this.uploadPhotoAsync(localUri, type);
+        //hacer un update de la uri en el documento
+        return new Promise((res, rej) => {
+            firebase.firestore()
+                .collection("avatars")
+                .where('uid', '==', firebase.auth().currentUser.uid)
+                .update({
+                    lastmodified: Date.now(),
+                    avatar: remoteUri,
+                    description: description
+                })
+                .then(ref => {
+                    res(ref)
+                })
+                .catch(error => {
+                    rej(error)
+                });
+        });
+    };
+
 }
 
 Fire.shared = new Fire()

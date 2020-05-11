@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation } from 'react-native';
-
+import { Ionicons } from '@expo/vector-icons'
+import * as constants from '../constants/constants'
 import * as firebase from 'firebase';
 
 export default class RegisterScreen extends React.Component {
@@ -17,7 +18,6 @@ export default class RegisterScreen extends React.Component {
   }
 
   handleSignUp = () => {
-
     firebase
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
@@ -33,15 +33,26 @@ export default class RegisterScreen extends React.Component {
       LayoutAnimation.easeInEaseOut();
         return (
           <View style={styles.container}>
-            
             <StatusBar hidden></StatusBar>
-
-            <Text style={styles.logo}>Regístrate para empezar!</Text>
+            <TouchableOpacity style={styles.back} onPress={ () => this.props.navigation.goBack()}>
+              <Ionicons name="ios-arrow-round-back" size={32} color={constants.CORP_PINK}></Ionicons>
+            </TouchableOpacity>
+            
+            <View style={{position:"absolute", top:80, alignItems:"center", width: "100%"}}>
+              <Text style={styles.logo}>Regístrate para empezar!</Text>
+              <TouchableOpacity style={styles.avatar}>
+                <Ionicons
+                  name="ios-add"
+                  size={75}
+                  color="white">
+                </Ionicons>
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.errorMsg}>
               {this.state.errorMessage && <Text style={styles.error}>{this.state.errorMessage}</Text>}
             </View>
-            
+
             <View style={styles.inputView}>
             <TextInput
                 style={styles.inputText}
@@ -75,12 +86,6 @@ export default class RegisterScreen extends React.Component {
             <TouchableOpacity style={styles.LoginBtn} onPress={this.handleSignUp}>
               <Text style={styles.buttonText}>Completar</Text>
             </TouchableOpacity> 
-            
-            <TouchableOpacity style={{alignSelf:"center", marginTop:25}} onPress={this.changeScreen}>
-              <Text style={{color:"grey", fontSize:15}}>
-                Nuevo en Planit? <Text style={{fontWeight:"500", color:"#fa526c"}}> Regístrate</Text> 
-              </Text>
-            </TouchableOpacity>
         </View>
       );
   }
@@ -93,15 +98,35 @@ container: {
   justifyContent: 'center',
   backgroundColor: "white"
 },
+back: {
+  position:"absolute",
+  top:30,
+  left:32,
+  width:32,
+  height:32,
+  borderRadius:16,
+  backgroundColor:constants.CORP_GREY,
+  alignItems:"center",
+  justifyContent:"center"
+},
+avatar: {
+  width:100,
+  height:100,
+  borderRadius:50,
+  backgroundColor:constants.CORP_GREY,
+  marginTop: 15,
+  justifyContent:"center",
+  alignItems:"center"
+},
 logo: {
   fontWeight:"bold",
   fontSize:25,
-  color: '#fa526c',
+  color: constants.CORP_PINK,
 },
 errorMsg: {
   height:50,
   marginHorizontal:30,
-  marginTop: 15
+  marginTop: 120,
 },
 error: {
   fontWeight:"600",
@@ -111,7 +136,7 @@ error: {
 },
 inputView: {
   width: "85%",
-  marginBottom: 30
+  marginBottom: 30,
 },
 inputText: {
   height: 50,
@@ -119,7 +144,9 @@ inputText: {
   borderBottomColor: 'black',
   borderBottomWidth: StyleSheet.hairlineWidth,
   fontSize: 17,
-  marginBottom: 15
+  marginBottom: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: constants.CORP_GREY
 },
 LoginBtn: {
   width: "75%",
