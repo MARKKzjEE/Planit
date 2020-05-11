@@ -16,46 +16,35 @@ require("@firebase/firestore");
 export default class PostScreen extends React.Component {
 
     state = {
-        image: null
+        images: [],
+        timestamp: []
     }
+
+    changeScreen = () => {
+        this.props.navigation.navigate('editProfile');
+      }
 
     componentDidMount() {
-        this.getPhotoPermission();
     }
 
-    componentWillUnmount() {}
-
-    getPhotoPermission = async () => {
-        if(Constants.platform.ios || Constants.platform.android) {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-            if(status != "granted") {
-                alert("La aplicación necesita permiso para acceder a tu Galería.")
-            }
-        }
-    };
-
-    pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3]
-        });
-        if(!result.cancelled) {
-            Fire.shared
-                .addPost(result.uri)
-            .then( () => {
-                Alert.alert("Imagen subida");
-                this.setState({ image: result.uri});
+    loadImages = async () => {
+        firebase.firestore()
+            .collection('posts').where('uid', '==', firebase.auth().currentUser.uid).get()
+            .then((snapshot) => {
+                snapshot.forEach(doc => {
+                    //console.log(doc.id, '=>', doc.data());
+                    //console.log(doc.data().image)
+                    this.setState({
+                        images: this.state.images.concat(doc.data().image),
+                        timestamp: this.state.timestamp.concat(doc.data().timestamp)
+                    });
+  
+                });
             })
-            .catch((error) => {
-                Alert.alert("Error al subir la imagen")
-                console.log(error)
-            });
-        }
-    };
+    }
 
     render(){
+
         return (
             <View style={styles.container}>
                 <SafeAreaView style={styles.container2}>
@@ -63,30 +52,33 @@ export default class PostScreen extends React.Component {
                         <TouchableOpacity>   
                         </TouchableOpacity>
                         <Text style={{fontWeight: "700"}}>Perfil</Text>
-                        <TouchableOpacity>
-                            <Text style={{color: constants.CORP_PINK, fontWeight: "700"}}>Editar</Text>
+                        <TouchableOpacity onPress={this.changeScreen}>
+                            <Ionicons name="md-brush" size={23} color={constants.CORP_PINK}></Ionicons>
                         </TouchableOpacity> 
                     </View>
                 </SafeAreaView>
 
                 <View style={styles.personalContainer}>
-                    <Text style={{fontSize: 20, fontWeight: "700"}}>Marc Gallego Gines</Text>
-                    <Image 
-                        source={ require("../assets/tempAvatar.jpg")} 
-                        style={styles.avatar}>
-                    </Image>
+                    <View style={styles.descriptionContainer}>
+                        <Text style={styles.nameContainer}>Marc Gallego Gines</Text>
+                        <View style={styles.descriptionInputView}>
+                            <Text style={{fontWeight: "700"}}>Sobre mí...</Text>
+                            <Text>HOLAHOLAHOLA</Text>
+                            </View>
+                    </View>
+                    <View style={styles.avatarContainer}>
+                        <Image 
+                            source={ require("../assets/tempAvatar.jpg")} 
+                            style={styles.avatar}>
+                        </Image>
+                    </View>
                 </View>
 
                 <View style={styles.imagesContainer}>
-                    <Image source={{uri: this.state.image}} style={{height:100, width: 100}}></Image>
                 </View>
 
-                <TouchableOpacity onPress={this.pickImage} style={styles.mdImages}>
-                    <Ionicons 
-                        name="md-images" 
-                        size={45} 
-                        color={constants.CORP_PINK}>
-                    </Ionicons>
+                <TouchableOpacity onPress={this.loadImages}> 
+                    <Text>BOTON AUXILIAR</Text> 
                 </TouchableOpacity>
             </View>
       );
@@ -112,24 +104,51 @@ const styles = StyleSheet.create({
         borderBottomColor: constants.CORP_GREY,  
     },
     personalContainer: {
-        margin: 32,
+        flex: 1,
         flexDirection: "row",
         justifyContent: "space-around",
+        maxHeight: 200,
+        marginHorizontal: 20,
+        marginVertical: 20,
+        marginLeft: 50
+    },
+    descriptionContainer: {
+        flex: 1,
+        flexDirection: "column",
+        height: 200,
+    },
+    nameContainer: {
+        height: 50, 
+        fontSize: 20, 
+        fontWeight: "700",
+    },
+    avatarContainer: {
     },
     avatar: {
         width: 75,
         height: 75,
         borderRadius: 25,
     },
+    descriptionInputView: {
+        borderWidth: 0,
+        height: 125,
+        width: 250,
+        borderRadius: 20,
+        borderColor: constants.CORP_GREY,
+    },
+    descriptionInput: {
+        marginHorizontal: 20,
+        marginVertical: 10
+    },
+
     imagesContainer: {
         flex: 1,
-        marginHorizontal: 32,
-        marginBottom: 20,
-        height: 150
+        marginHorizontal: 20,
+        marginBottom: 20
     },
     mdImages: {
         alignItems: "flex-end",
-        marginHorizontal: 40,
+        marginHorizontal: 20,
         marginBottom: 20,
     }
 })

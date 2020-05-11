@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutA
 
 import * as firebase from 'firebase';
 
+ import * as constants from '../constants/constants'
+
 export default class LoginScreen extends React.Component {
 
   state={
@@ -111,7 +113,9 @@ inputText: {
   borderBottomColor: 'black',
   borderBottomWidth: StyleSheet.hairlineWidth,
   fontSize: 17,
-  marginBottom: 15
+  marginBottom: 15,
+  borderBottomColor: constants.CORP_GREY,
+  borderBottomWidth: 1
 },
 LoginBtn: {
   width: "75%",

@@ -13,18 +13,13 @@ import NotificationScreen from './screens/NotificationScreen'
 import PostScreen from './screens/PostScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import EditProfileScreen from './screens/EditProfileScreen'
 
 import * as constants from './constants/constants'
 
 import Fire from './Fire'
 
 import Firetimerbug from './firetimerbug'
-
-/*
-// Inicializamos firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(constants.DB_CONFIG);
-}*/
 
 const AppContainer = createStackNavigator(
   {
@@ -93,6 +88,10 @@ const AppContainer = createStackNavigator(
     postModal: {
       screen: PostScreen
     },
+    
+    editProfile: {
+      screen: EditProfileScreen
+    }
   },
   {
     mode: "modal",
