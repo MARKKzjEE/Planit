@@ -18,12 +18,7 @@ export default class HomeScreen extends React.Component {
     this.setState({ email, displayName});
   }
 
-  signOutUser = () => {
-    firebase.auth().signOut();
-  };
-  
   componentWillUnmount(){
-    this.props.navigation.dispatch(resetAction);
   }
 
   render(){
@@ -43,10 +38,6 @@ export default class HomeScreen extends React.Component {
             </SafeAreaView>
           <View style={styles.container3}>
             <Text>Hola {this.state.email}!</Text>
-
-            <TouchableOpacity style={{marginTop:32}} onPress={this.signOutUser}>
-              <Text>Logout</Text>
-            </TouchableOpacity>
           </View>
           </View>
         );

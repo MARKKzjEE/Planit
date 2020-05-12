@@ -1,32 +1,41 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import * as constants from '../constants/constants'
+
 import * as firebase from 'firebase';
+import Fire from '../Fire'
+
+import UserPermissions from '../utilities/UserPermissions'
+import * as ImagePicker from 'expo-image-picker';
 
 export default class RegisterScreen extends React.Component {
 
   state={
-    name: "",
-    email:"",
-    password:"",
-    errorMessage: null
+    regUser: {
+      name: "",
+      email:"",
+      password:"",
+      avatar: null
+    }
   }
 
-  changeScreen = () => {
-    this.props.navigation.navigate('Register');
+  handlePickAvatar = async () => {
+
+    UserPermissions.getPhotoPermission();
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3]
+    }); 
+    if(!result.cancelled) {
+        this.setState({ regUser: {...this.state.regUser, avatar: result.uri }});
+    }
   }
 
   handleSignUp = () => {
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(userCredentials => {
-        return userCredentials.user.updateProfile({
-          displayName: this.state.name
-        });
-      })
-      .catch(error => this.setState({errorMessage: error.message}));
+    Fire.shared.createUser(this.state.regUser)
   }
 
     render(){
@@ -40,7 +49,8 @@ export default class RegisterScreen extends React.Component {
             
             <View style={{position:"absolute", top:80, alignItems:"center", width: "100%"}}>
               <Text style={styles.logo}>Regístrate para empezar!</Text>
-              <TouchableOpacity style={styles.avatar}>
+              <TouchableOpacity style={styles.avatarPlaceholder} onPress={this.handlePickAvatar}>
+                <Image source={{uri: this.state.regUser.avatar}} style={styles.avatar}></Image>
                 <Ionicons
                   name="ios-add"
                   size={75}
@@ -49,18 +59,14 @@ export default class RegisterScreen extends React.Component {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.errorMsg}>
-              {this.state.errorMessage && <Text style={styles.error}>{this.state.errorMessage}</Text>}
-            </View>
-
             <View style={styles.inputView}>
             <TextInput
                 style={styles.inputText}
                 placeholder="Nombre Completo..."
                 autoCapitalize="none"
                 placeholderTextColor= "grey"
-                onChangeText={name => this.setState({ name })}
-                value={this.state.name}>
+                onChangeText={name => this.setState({ regUser: {...this.state.regUser, name} })}
+                value={this.state.regUser.name}>
               </TextInput>
 
               <TextInput
@@ -68,8 +74,8 @@ export default class RegisterScreen extends React.Component {
                 placeholder="Email..."
                 autoCapitalize="none"
                 placeholderTextColor= "grey"
-                onChangeText={email => this.setState({ email })}
-                value={this.state.email}>
+                onChangeText={email => this.setState({ regUser: {...this.state.regUser, email} })}
+                value={this.state.regUser.email}>
               </TextInput>
 
               <TextInput
@@ -78,8 +84,8 @@ export default class RegisterScreen extends React.Component {
                 style={styles.inputText}
                 placeholder="Contraseña..."
                 placeholderTextColor= "grey"
-                onChangeText={password => this.setState({ password })}
-                value={this.state.password}>
+                onChangeText={password => this.setState({ regUser: {...this.state.regUser, password} })}
+                value={this.state.regUser.password}>
               </TextInput>
             </View>
 
@@ -104,12 +110,10 @@ back: {
   left:32,
   width:32,
   height:32,
-  borderRadius:16,
-  backgroundColor:constants.CORP_GREY,
   alignItems:"center",
   justifyContent:"center"
 },
-avatar: {
+avatarPlaceholder: {
   width:100,
   height:100,
   borderRadius:50,
@@ -118,25 +122,21 @@ avatar: {
   justifyContent:"center",
   alignItems:"center"
 },
+avatar: {
+  position: "absolute",
+  width:100,
+  height:100,
+  borderRadius:50,
+},
 logo: {
   fontWeight:"bold",
   fontSize:25,
   color: constants.CORP_PINK,
 },
-errorMsg: {
-  height:50,
-  marginHorizontal:30,
-  marginTop: 120,
-},
-error: {
-  fontWeight:"600",
-  fontSize:13,
-  color: "red",
-  textDecorationLine: 'underline'
-},
 inputView: {
   width: "85%",
   marginBottom: 30,
+  marginTop: 100
 },
 inputText: {
   height: 50,
@@ -154,7 +154,7 @@ LoginBtn: {
   borderRadius:4,
   height:50,
   alignItems:"center",
-  justifyContent:"center",
+  justifyContent:"center"
 },
 buttonText: {
   color: "white"

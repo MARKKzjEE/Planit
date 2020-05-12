@@ -1,5 +1,6 @@
 import firebase from 'firebase';
 import '@firebase/firestore';
+import { Alert } from 'react-native';
 
 var DB_CONFIG = {
     apiKey: "AIzaSyBHk2r2_fEb8QGo46aDRpvJKZB2cgIuC0E",
@@ -24,9 +25,7 @@ class Fire {
         }  
     }
     /*1. Foto cargada en Firebase Storage*/
-    uploadPhotoAsync = async (uri, type) => {
-
-        const path = `${type}/${this.uid}/${Date.now()}.jpg`
+    uploadPhotoAsync = async (uri, filename) => {
 
         return new Promise(async (res, rej) => {
             const response = await fetch(uri);
@@ -34,7 +33,7 @@ class Fire {
             
             let upload = firebase
                 .storage()
-                .ref(path)
+                .ref(filename)
                 .put(file);
             
             upload.on(
@@ -52,9 +51,9 @@ class Fire {
     };
 
     /*2. Imagen galeria usuario cargada en Firebase Firestore*/
-    addImage = async (localUri, type) => {
+    addImage = async (localUri) => {
         //subir imagen a BD
-        const remoteUri = await this.uploadPhotoAsync(localUri, type);
+        const remoteUri = await this.uploadPhotoAsync(localUri, `photos/${firebase.auth().currentUser.uid}/${Date.now()}`);
         
         //guardar uri en la tabla
         return new Promise((res, rej) => {
@@ -74,28 +73,66 @@ class Fire {
         });
     };
 
-    /*3. Información Editada del Perfil cargada en Firebase Firestore*/
-    updateAvatarAndInfo = async (localUri, description, type) => {
-        const remoteUri = await this.uploadPhotoAsync(localUri, type);
-        //hacer un update de la uri en el documento
-        return new Promise((res, rej) => {
-            firebase.firestore()
-                .collection("avatars")
-                .where('uid', '==', firebase.auth().currentUser.uid)
-                .update({
-                    lastmodified: Date.now(),
-                    avatar: remoteUri,
-                    description: description
-                })
-                .then(ref => {
-                    res(ref)
-                })
-                .catch(error => {
-                    rej(error)
-                });
-        });
+    /*2.1 Imagen galeria usuario cargada en Firebase Firestore*/
+    createUser = async (regUser) => {
+
+        try {
+
+            await firebase.auth().createUserWithEmailAndPassword(regUser.email, regUser.password);
+
+            let db = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+            db.set({
+                name: regUser.name,
+                email: regUser.email,
+                avatar: null,
+            });
+
+            if(regUser.avatar){
+                await this.uploadPhotoAsync(regUser.avatar, `avatars/${firebase.auth().currentUser.uid}/${Date.now()}`)
+                            .then((remoteUri) => {
+                                db.set({ avatar: remoteUri}, {merge: true})
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                            });
+            }
+            else {
+                firebase.storage()
+                    .ref('avatars/')
+                    .child('defaultAvatar.png')
+                    .getDownloadURL()
+                    .then((remoteUri) => {
+                        db.set({ avatar: remoteUri}, {merge: true})
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
+            }
+            
+        }
+        catch(error) {
+            Alert.alert("Error: ", error.message);
+        }
     };
 
+    /*3. Información Editada del Perfil cargada en Firebase Firestore*/
+    updateAvatarAndInfo = async (pickAvatar, localUri, description) => {
+        
+        let db = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+            db.update({
+                description: description
+            });
+        
+        if(pickAvatar){
+            await this.uploadPhotoAsync(localUri, `avatars/${firebase.auth().currentUser.uid}/${Date.now()}`)
+                .then((remoteUri) => {
+                    db.update({ avatar: remoteUri })
+                })
+                .catch((error) => {
+                    console.log(error)
+                });
+        }
+    };
 }
 
 Fire.shared = new Fire()

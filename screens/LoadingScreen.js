@@ -4,7 +4,6 @@ import { Asset } from 'expo-asset';
 import { AppLoading } from 'expo';
 
 import firebase from 'firebase';
-import Fire from '../Fire'
 
 export default class LoadingScreen extends React.Component {
 

@@ -16,28 +16,56 @@ require("@firebase/firestore");
 export default class PostScreen extends React.Component {
 
     state = {
-        images: []
+        images: [],
+        name: "",
+        avatar: null,
+        description: ""
     }
 
-    changeScreen = () => {
-        this.props.navigation.navigate('editProfile');
+    signOutUser = () => {
+        firebase.auth().signOut();
+    };
+
+    changeScreen = (estado) => {
+        this.props.navigation.navigate('editProfile',this.state);
       }
 
     componentDidMount() {
+        this.loadInfo()
         this.loadImages();
     }
     
     /* 1. Cargar imágenes desde la DB */
     loadImages = async () => {
         firebase.firestore()
-            .collection('posts').where('uid', '==', firebase.auth().currentUser.uid).get()
+            .collection('gallery').where('uid', '==', firebase.auth().currentUser.uid).get()
             .then((snapshot) => {
-                snapshot.forEach(doc => {
-                    this.setState({
-                        images: this.state.images.concat([{url: doc.data().image, idImg: doc.id}])
+                if(!snapshot.empty){
+                    snapshot.forEach(doc => {
+                        this.setState({
+                            images: this.state.images.concat([{url: doc.data().image, idImg: doc.id}])
+                        });
                     });
-                });
+                }
             })
+            .catch((error) => {
+                console.log(error)
+            });
+    };
+
+    loadInfo = async () => {
+        firebase.firestore()
+        .collection("users").doc(firebase.auth().currentUser.uid).get()
+        .then(doc => {
+            this.setState({
+                name: doc.data().name,
+                avatar: doc.data().avatar,
+                description: doc.data().description
+            })
+        })
+        .catch((error) => {
+            console.log(error)
+        });
     };
 
     render(){
@@ -57,17 +85,21 @@ export default class PostScreen extends React.Component {
 
                 <View style={styles.personalContainer}>
                     <View style={styles.descriptionContainer}>
-                        <Text style={styles.nameContainer}>Marc Gallego Gines</Text>
+                        <Text style={styles.nameContainer}>{this.state.name}</Text>
                         <View style={styles.descriptionInputView}>
                             <Text style={{fontWeight: "700"}}>Sobre mí...</Text>
-                            <Text>HOLAHOLAHOLA</Text>
-                            </View>
+                            <Text style={styles.descriptionInput}
+                                multiline={true}
+                                numberOfLines={5}>
+                                {this.state.description}
+                            </Text>
+                        </View>
                     </View>
                     <View style={styles.avatarContainer}>
-                        <Image 
-                            source={ require("../assets/tempAvatar.jpg")} 
-                            style={styles.avatar}>
-                        </Image>
+                        <Image source={{ uri: this.state.avatar }} style={styles.avatar}></Image>
+                        <TouchableOpacity onPress={this.signOutUser} style={styles.editarAvatar}>
+                            <Text style={{padding: 10, color: "white"}}>Desconectar</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
 
@@ -119,21 +151,31 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
     avatarContainer: {
+        marginTop: 10,
+        alignItems: "center"
     },
     avatar: {
-        width: 75,
-        height: 75,
+        width: 100,
+        height: 100,
         borderRadius: 25,
+    },
+    editarAvatar: {
+        justifyContent: "center",  
+        textDecorationLine: "underline", 
+        marginTop: 10,
+        fontWeight: "700",
+        height: 25,
+        backgroundColor: "grey",
+        borderRadius: 10
     },
     descriptionInputView: {
         borderWidth: 0,
         height: 125,
-        width: 250,
+        width: 200,
         borderRadius: 20,
         borderColor: constants.CORP_GREY,
     },
     descriptionInput: {
-        marginHorizontal: 20,
         marginVertical: 10
     },
 
