@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, TextInput, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,30 +8,19 @@ import UserPermissions from '../utilities/UserPermissions'
 import * as ImagePicker from 'expo-image-picker';
 
 import Fire from '../Fire';
-
 const firebase = require("firebase");
 require("@firebase/firestore");
 
-export default class PostScreen extends React.Component {
+export default function PostScreen({navigation, route}) {
 
-    constructor(props) {
-        super(props);
-        this.state={
-            name: this.props.navigation.state.params.name,
-            pickAvatar: false,
-            avatar: this.props.navigation.state.params.avatar,
-            description: this.props.navigation.state.params.description
-        }
-    }
 
-    componentDidMount() {
-        UserPermissions.getPhotoPermission();
-    }
-
-    componentWillUnmount() {}
+    const [name, setName] = useState("")
+    const [avatar, setAvatar] = useState("")
+    const [avatarChange, setAvatarChange] = useState(false)
+    const [description, setDescription] = useState("")
 
     /* 2.Escoger imagen de galería nativa y cargarla en la DB */
-    pickImage = async () => {
+    const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -42,7 +31,6 @@ export default class PostScreen extends React.Component {
                 .addImage(result.uri)
                 .then( () => {
                     Alert.alert("Imagen subida. Confirma los cambios.");
-                    //this.setState({ image: result.uri});
                 })
                 .catch((error) => {
                     Alert.alert("Error al subir la imagen. Intentálo de nuevo.")
@@ -52,7 +40,7 @@ export default class PostScreen extends React.Component {
     };
 
     /* 3.Escoger imagen de galería nativa */
-    pickAvatar = async () => {
+    const pickAvatar = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -60,84 +48,85 @@ export default class PostScreen extends React.Component {
         });
         
         if(!result.cancelled) {
-            this.setState({pickAvatar: true, avatar: result.uri})
+            setAvatar(result.uri)
+            setAvatarChange(true)
         }
     };
 
     /* 4.Actualizar información editada en la base de datos.*/
-    handleEdit = () => {
+    const handleEdit = () => {
         Fire.shared
-            .updateAvatarAndInfo(this.state.pickAvatar, this.state.avatar, this.state.description)
+            .updateAvatarAndInfo(avatarChange, avatar, description)
             .then( () => {
                 console.log("Perfil actualizado")
-                this.props.navigation.goBack()
+                navigation.goBack()
             })
             .catch((error) => {
                 console.log(error)
             });
     }
 
-    render(){
-        return (
-            <View style={styles.container}>
-                <SafeAreaView style={styles.headerContainer}>
-                    <TouchableOpacity onPress={this.pickAvatar} style={styles.header}>
-                        <TouchableOpacity>
-                            <Ionicons 
-                                name="md-arrow-back" 
-                                size={23} 
-                                color={constants.CORP_PINK} 
-                                onPress={ () => this.props.navigation.goBack() }>
-                            </Ionicons>   
-                        </TouchableOpacity>
-                            <Text style={{fontWeight: "700"}}>Editar Perfil</Text>
-                        <TouchableOpacity>
-                            <Ionicons 
-                                name="md-checkbox" 
-                                size={23} 
-                                color={constants.CORP_PINK}
-                                onPress={this.handleEdit}>
-                                </Ionicons>
-                        </TouchableOpacity> 
+    return (
+        <View style={styles.container}>
+            <SafeAreaView style={styles.headerContainer}>
+                <TouchableOpacity style={styles.header}>
+                    <TouchableOpacity>
+                        <Ionicons 
+                            name="md-arrow-back" 
+                            size={23} 
+                            color={constants.CORP_PINK} 
+                            onPress={ () => navigation.goBack() }>
+                        </Ionicons>   
                     </TouchableOpacity>
-                </SafeAreaView>
-                <View style={styles.personalContainer}>
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.nameContainer}>{this.state.name}</Text>
-                        <View style={styles.descriptionInputView}>
-                            <TextInput
-                                style={styles.descriptionInput}
-                                placeholder="Descríbete como quieras que te vean..."
-                                placeholderTextColor= "grey"
-                                onChangeText={description => this.setState({ description })}
-                                value={this.state.description}
-                                multiline={true}
-                                numberOfLines={3}
-                                maxLength={100}
-                                >
-                            </TextInput>
-                        </View>
-                    </View>
-                    <TouchableOpacity onPress={this.pickAvatar} style={styles.avatarContainer}>
-                        <Image source={{uri: this.state.avatar}} style={styles.avatar}></Image>
-                        <Text style={styles.editarAvatar}>
-                            Cambiar
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-                
-                <TouchableOpacity onPress={this.pickImage} style={styles.mdImages}>
-                    <Ionicons 
-                        name="md-images" 
-                        size={80} 
-                        color={constants.CORP_PINK}>
-                    </Ionicons>
-                    <Text style={{fontWeight:"700",color:constants.CORP_PINK}}>Añade las fotos que más te gusten!</Text>
+                        <Text style={{fontWeight: "700"}}>Editar Perfil</Text>
+                    <TouchableOpacity>
+                        <Ionicons 
+                            name="md-checkbox" 
+                            size={23} 
+                            color={constants.CORP_PINK}
+                            onPress={handleEdit}>
+                            </Ionicons>
+                    </TouchableOpacity> 
                 </TouchableOpacity>
-                
+            </SafeAreaView>
+            <View style={styles.personalContainer}>
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.nameContainer}>{name}</Text>
+                    <View style={styles.descriptionInputView}>
+                        <TextInput
+                            style={styles.descriptionInput}
+                            placeholder="Descríbete como quieras que te vean..."
+                            placeholderTextColor= "grey"
+                            onChangeText={description => setDescription(description)}
+                            value={description}
+                            multiline={true}
+                            numberOfLines={3}
+                            maxLength={100}
+                            >
+                        </TextInput>
+                    </View>
+                </View>
+                <TouchableOpacity onPress={pickAvatar} style={styles.avatarContainer}>
+                    {avatar !== "" &&
+                        <Image source={{ uri: avatar }} style={styles.avatar}></Image>
+                    }
+                    <Text style={styles.editarAvatar}>
+                        Cambiar
+                    </Text>
+                </TouchableOpacity>
             </View>
-      );
-    }
+            
+            <TouchableOpacity onPress={pickImage} style={styles.mdImages}>
+                <Ionicons 
+                    name="md-images" 
+                    size={80} 
+                    color={constants.CORP_PINK}>
+                </Ionicons>
+                <Text style={{fontWeight:"700",color:constants.CORP_PINK}}>Añade las fotos que más te gusten!</Text>
+            </TouchableOpacity>
+            
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

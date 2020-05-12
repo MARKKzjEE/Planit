@@ -1,50 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, TextInput, TouchableOpacityBase, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import * as constants from '../constants/constants';
-
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
-import * as ImagePicker from 'expo-image-picker';
-
-import Fire from '../Fire';
+import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 
 const firebase = require("firebase");
 require("@firebase/firestore");
 
-export default class PostScreen extends React.Component {
+export default function ProfileScreen({navigation, route})  {
 
-    state = {
-        images: [],
-        name: "",
-        avatar: null,
-        description: ""
-    }
+    const [images, setImages] = useState([{
+        id: "",
+        url: ""
+    }])
+    const [name, setName] = useState("")
+    const [description, setDescription] = useState("")
+    const [avatar, setAvatar] = useState("")
 
-    signOutUser = () => {
+    const signOutUser = () => {
         firebase.auth().signOut();
     };
 
-    changeScreen = (estado) => {
-        this.props.navigation.navigate('editProfile',this.state);
-      }
+    const changeScreen = (estado) => {
+        navigation.navigate('editProfile');
+    };
 
-    componentDidMount() {
-        this.loadInfo()
-        this.loadImages();
-    }
+    const refreshScreen = () => {
+        loadInfo()
+        loadImages()
+        console.log("ELLA ME LLAMA")
+    };
     
     /* 1. Cargar imágenes desde la DB */
-    loadImages = async () => {
+    const loadImages = async () => {
+        
         firebase.firestore()
             .collection('gallery').where('uid', '==', firebase.auth().currentUser.uid).get()
             .then((snapshot) => {
                 if(!snapshot.empty){
                     snapshot.forEach(doc => {
-                        this.setState({
-                            images: this.state.images.concat([{url: doc.data().image, idImg: doc.id}])
-                        });
+                        setImages(images => [...images, doc.data()])
+                        setImagesId(imagesId => [...imagesId, doc.id])
                     });
                 }
             })
@@ -53,64 +50,67 @@ export default class PostScreen extends React.Component {
             });
     };
 
-    loadInfo = async () => {
+    const loadInfo = async () => {
         firebase.firestore()
         .collection("users").doc(firebase.auth().currentUser.uid).get()
         .then(doc => {
-            this.setState({
-                name: doc.data().name,
-                avatar: doc.data().avatar,
-                description: doc.data().description
-            })
+            setName(doc.data().name)
+            setDescription(doc.data().description)
+            setAvatar(doc.data().avatar)
         })
         .catch((error) => {
             console.log(error)
         });
-    };
+    }
+    
+    useEffect(() => {
+        console.log("HOLA")
+        console.log(navigation)
+        loadInfo()
+    }, []);
+    
+    return (
+        <View style={styles.container}>
+            <SafeAreaView style={styles.container2}>
+                <View style={styles.header}>
+                    <TouchableOpacity>   
+                    </TouchableOpacity>
+                    <Text style={{fontWeight: "700"}}>Perfil</Text>
+                    <TouchableOpacity onPress={changeScreen}>
+                        <Ionicons name="md-brush" size={23} color={constants.CORP_PINK}></Ionicons>
+                    </TouchableOpacity> 
+                </View>
+            </SafeAreaView>
 
-    render(){
-
-        return (
-            <View style={styles.container}>
-                <SafeAreaView style={styles.container2}>
-                    <View style={styles.header}>
-                        <TouchableOpacity>   
-                        </TouchableOpacity>
-                        <Text style={{fontWeight: "700"}}>Perfil</Text>
-                        <TouchableOpacity onPress={this.changeScreen}>
-                            <Ionicons name="md-brush" size={23} color={constants.CORP_PINK}></Ionicons>
-                        </TouchableOpacity> 
-                    </View>
-                </SafeAreaView>
-
-                <View style={styles.personalContainer}>
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.nameContainer}>{this.state.name}</Text>
-                        <View style={styles.descriptionInputView}>
-                            <Text style={{fontWeight: "700"}}>Sobre mí...</Text>
-                            <Text style={styles.descriptionInput}
-                                multiline={true}
-                                numberOfLines={5}>
-                                {this.state.description}
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={styles.avatarContainer}>
-                        <Image source={{ uri: this.state.avatar }} style={styles.avatar}></Image>
-                        <TouchableOpacity onPress={this.signOutUser} style={styles.editarAvatar}>
-                            <Text style={{padding: 10, color: "white"}}>Desconectar</Text>
-                        </TouchableOpacity>
+            <View style={styles.personalContainer}>
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.nameContainer}>{name}</Text>
+                    <View style={styles.descriptionInputView}>
+                        <Text style={{fontWeight: "700"}}>Sobre mí...</Text>
+                        <Text style={styles.descriptionInput}
+                            multiline={true}
+                            numberOfLines={5}>
+                            {description}
+                        </Text>
                     </View>
                 </View>
-
-                <View style={styles.imagesContainer}>
-                    {this.state.images  && this.state.images.map(item => 
-                        <Image style={styles.image} key={item.idImg} source={{uri: item.url}}></Image>
-                    )}
+                <View style={styles.avatarContainer}>
+                    {avatar !== "" &&
+                    <Image source={{ uri: avatar }} style={styles.avatar}></Image>
+                    }
+                    <TouchableOpacity onPress={signOutUser} style={styles.editarAvatar}>
+                        <Text style={{padding: 10, color: "white"}}>Desconectar</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
-      );
-    }
+
+            <View style={styles.imagesContainer}>
+                {images.length > 0  && images.map(item => 
+                    <Image style={styles.image} key={item.id} source={{uri: item.url}}></Image>
+                && item.url != "")}
+            </View>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

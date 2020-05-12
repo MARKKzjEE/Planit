@@ -56,7 +56,7 @@ const AppContainer = createStackNavigator(
         screen: ProfileScreen,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => <Ionicons name="ios-person" size={24} color={tintColor}></Ionicons>
-        }
+        }   
       },
       Notification: {
         screen: SettingsScreen,
