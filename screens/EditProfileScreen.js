@@ -11,8 +11,9 @@ import Fire from '../Fire';
 const firebase = require("firebase");
 require("@firebase/firestore");
 
-export default function PostScreen({navigation, route}) {
+export default function PostScreen({route, navigation}) {
 
+    { }
 
     const [name, setName] = useState("")
     const [avatar, setAvatar] = useState("")
@@ -66,6 +67,11 @@ export default function PostScreen({navigation, route}) {
             });
     }
 
+    const auxiliarFunction = () => {
+        console.log(navigation)
+        console.log(route)
+    }
+
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.headerContainer}>
@@ -84,7 +90,7 @@ export default function PostScreen({navigation, route}) {
                             name="md-checkbox" 
                             size={23} 
                             color={constants.CORP_PINK}
-                            onPress={handleEdit}>
+                            onPress={auxiliarFunction}>
                             </Ionicons>
                     </TouchableOpacity> 
                 </TouchableOpacity>

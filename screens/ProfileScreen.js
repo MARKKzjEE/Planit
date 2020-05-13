@@ -22,8 +22,12 @@ export default function ProfileScreen({navigation, route})  {
         firebase.auth().signOut();
     };
 
-    const changeScreen = (estado) => {
-        navigation.navigate('editProfile');
+    const changeScreen = () => {
+        navigation.navigate('editProfile', {
+            name1: name,
+            description1: description,
+            avatar1: avatar
+        });
     };
 
     const refreshScreen = () => {
@@ -44,6 +48,7 @@ export default function ProfileScreen({navigation, route})  {
                         setImagesId(imagesId => [...imagesId, doc.id])
                     });
                 }
+                console.log("Galeria Cargada.")
             })
             .catch((error) => {
                 console.log(error)
@@ -57,6 +62,7 @@ export default function ProfileScreen({navigation, route})  {
             setName(doc.data().name)
             setDescription(doc.data().description)
             setAvatar(doc.data().avatar)
+            console.log("Información cargada.")
         })
         .catch((error) => {
             console.log(error)
@@ -64,8 +70,6 @@ export default function ProfileScreen({navigation, route})  {
     }
     
     useEffect(() => {
-        console.log("HOLA")
-        console.log(navigation)
         loadInfo()
     }, []);
     
@@ -76,7 +80,13 @@ export default function ProfileScreen({navigation, route})  {
                     <TouchableOpacity>   
                     </TouchableOpacity>
                     <Text style={{fontWeight: "700"}}>Perfil</Text>
-                    <TouchableOpacity onPress={changeScreen}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('editProfile', {
+                            name1: "hahahaha",
+                            description1: description,
+                            avatar1: avatar
+                        });
+                    }}>
                         <Ionicons name="md-brush" size={23} color={constants.CORP_PINK}></Ionicons>
                     </TouchableOpacity> 
                 </View>

@@ -4,29 +4,27 @@ import { Ionicons } from '@expo/vector-icons'
 
 import * as constants from '../constants/constants'
 
-export default class PostScreen extends React.Component {
+export default function PostScreen() {
 
-    render(){
-        return (
-            <View style={styles.container}>
-                <SafeAreaView style={styles.container2}>
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={ () => this.props.navigation.goBack() }>
-                            <Ionicons 
-                                name="md-arrow-back" 
-                                size={24} 
-                                color={constants.CORP_PINK}
-                                ></Ionicons>   
-                        </TouchableOpacity>
-                        <Text style={{fontWeight: "700"}}>Crea tu Plan</Text>
-                        <TouchableOpacity>
-                            <Text style={{fontWeight: "700", color:constants.CORP_PINK}}>Crear</Text>
-                        </TouchableOpacity>
-                    </View>
-                </SafeAreaView>
-            </View>
-      );
-    }
+    return (
+        <View style={styles.container}>
+            <SafeAreaView style={styles.container2}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={ () => this.props.navigation.goBack() }>
+                        <Ionicons 
+                            name="md-arrow-back" 
+                            size={24} 
+                            color={constants.CORP_PINK}
+                            ></Ionicons>   
+                    </TouchableOpacity>
+                    <Text style={{fontWeight: "700"}}>Crea tu Plan</Text>
+                    <TouchableOpacity>
+                        <Text style={{fontWeight: "700", color:constants.CORP_PINK}}>Crear</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

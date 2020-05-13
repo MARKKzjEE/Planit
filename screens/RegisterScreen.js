@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import * as constants from '../constants/constants'
@@ -9,18 +9,16 @@ import Fire from '../Fire'
 import UserPermissions from '../utilities/UserPermissions'
 import * as ImagePicker from 'expo-image-picker';
 
-export default class RegisterScreen extends React.Component {
+export default function RegisterScreen({navigation}) {
 
-  state={
-    regUser: {
-      name: "",
-      email:"",
-      password:"",
-      avatar: null
-    }
-  }
+  const [regUser, setRegUser] = useState({
+    name: "",
+    email: "",
+    password: "",
+    avatar: null
+  })
 
-  handlePickAvatar = async () => {
+  const handlePickAvatar = async () => {
 
     UserPermissions.getPhotoPermission();
 
@@ -30,71 +28,70 @@ export default class RegisterScreen extends React.Component {
       aspect: [4, 3]
     }); 
     if(!result.cancelled) {
-        this.setState({ regUser: {...this.state.regUser, avatar: result.uri }});
+        setRegUser({ regUser: {...regUser, avatar: result.uri }});
     }
   }
 
-  handleSignUp = () => {
-    Fire.shared.createUser(this.state.regUser)
+  const handleSignUp = () => {
+    Fire.shared.createUser(regUser)
   }
 
-    render(){
-      LayoutAnimation.easeInEaseOut();
-        return (
-          <View style={styles.container}>
-            <StatusBar hidden></StatusBar>
-            <TouchableOpacity style={styles.back} onPress={ () => this.props.navigation.goBack()}>
-              <Ionicons name="ios-arrow-round-back" size={32} color={constants.CORP_PINK}></Ionicons>
-            </TouchableOpacity>
-            
-            <View style={{position:"absolute", top:80, alignItems:"center", width: "100%"}}>
-              <Text style={styles.logo}>Regístrate para empezar!</Text>
-              <TouchableOpacity style={styles.avatarPlaceholder} onPress={this.handlePickAvatar}>
-                <Image source={{uri: this.state.regUser.avatar}} style={styles.avatar}></Image>
-                <Ionicons
-                  name="ios-add"
-                  size={75}
-                  color="white">
-                </Ionicons>
-              </TouchableOpacity>
-            </View>
+  LayoutAnimation.easeInEaseOut();
 
-            <View style={styles.inputView}>
-            <TextInput
-                style={styles.inputText}
-                placeholder="Nombre Completo..."
-                autoCapitalize="none"
-                placeholderTextColor= "grey"
-                onChangeText={name => this.setState({ regUser: {...this.state.regUser, name} })}
-                value={this.state.regUser.name}>
-              </TextInput>
-
-              <TextInput
-                style={styles.inputText}
-                placeholder="Email..."
-                autoCapitalize="none"
-                placeholderTextColor= "grey"
-                onChangeText={email => this.setState({ regUser: {...this.state.regUser, email} })}
-                value={this.state.regUser.email}>
-              </TextInput>
-
-              <TextInput
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.inputText}
-                placeholder="Contraseña..."
-                placeholderTextColor= "grey"
-                onChangeText={password => this.setState({ regUser: {...this.state.regUser, password} })}
-                value={this.state.regUser.password}>
-              </TextInput>
-            </View>
-
-            <TouchableOpacity style={styles.LoginBtn} onPress={this.handleSignUp}>
-              <Text style={styles.buttonText}>Completar</Text>
-            </TouchableOpacity> 
+    return (
+      <View style={styles.container}>
+        <StatusBar hidden></StatusBar>
+        <TouchableOpacity style={styles.back} onPress={ () => navigation.goBack()}>
+          <Ionicons name="ios-arrow-round-back" size={32} color={constants.CORP_PINK}></Ionicons>
+        </TouchableOpacity>
+        
+        <View style={{position:"absolute", top:80, alignItems:"center", width: "100%"}}>
+          <Text style={styles.logo}>Regístrate para empezar!</Text>
+          <TouchableOpacity style={styles.avatarPlaceholder} onPress={handlePickAvatar}>
+            <Image source={{uri: regUser.avatar}} style={styles.avatar}></Image>
+            <Ionicons
+              name="ios-add"
+              size={75}
+              color="white">
+            </Ionicons>
+          </TouchableOpacity>
         </View>
-      );
-  }
+
+        <View style={styles.inputView}>
+        <TextInput
+            style={styles.inputText}
+            placeholder="Nombre Completo..."
+            autoCapitalize="none"
+            placeholderTextColor= "grey"
+            onChangeText={name => setRegUser({...regUser, name})}
+            value={regUser.name}>
+          </TextInput>
+
+          <TextInput
+            style={styles.inputText}
+            placeholder="Email..."
+            autoCapitalize="none"
+            placeholderTextColor= "grey"
+            onChangeText={email => setRegUser({...regUser, email})}
+            value={regUser.email}>
+          </TextInput>
+
+          <TextInput
+            secureTextEntry
+            autoCapitalize="none"
+            style={styles.inputText}
+            placeholder="Contraseña..."
+            placeholderTextColor= "grey"
+            onChangeText={password => setRegUser({...regUser, password})}
+            value={regUser.password}>
+          </TextInput>
+        </View>
+
+        <TouchableOpacity style={styles.LoginBtn} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Completar</Text>
+        </TouchableOpacity> 
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

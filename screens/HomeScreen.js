@@ -1,49 +1,37 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, SafeAreaView,  } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 
-import * as firebase from 'firebase'
-
 import * as constants from '../constants/constants'
+import firebase from 'firebase'
 
-export default class HomeScreen extends React.Component {
-    
-  state = {
-    email: "",
-    displayName: ""
-  };
+export default function HomeScreen({navigation}) {
+  
+  const [email, setEmail] = useState("")
+  const [displayName, setDisplayName] = useState("")
 
-  componentDidMount() {
-    const { email, displayName } = firebase.auth().currentUser;
-    this.setState({ email, displayName});
-  }
+  useEffect(() => {
+    console.log(firebase.auth().currentUser)
+  })
 
-  componentWillUnmount(){
-  }
-
-  render(){
-
-        LayoutAnimation.easeInEaseOut();
-
-        return (
-          <View style={styles.container}>
-            <SafeAreaView style={styles.container2}>
-              <View style={styles.header}>
-                  <TouchableOpacity>   
-                  </TouchableOpacity>
-                  <Text style={{fontWeight: "700"}}>Inicio</Text>
-                  <TouchableOpacity>
-                  </TouchableOpacity>
-              </View>
-            </SafeAreaView>
-          <View style={styles.container3}>
-            <Text>Hola {this.state.email}!</Text>
+  LayoutAnimation.easeInEaseOut();
+    return (
+      <View style={styles.container}>
+        <SafeAreaView style={styles.container2}>
+          <View style={styles.header}>
+              <TouchableOpacity>   
+              </TouchableOpacity>
+              <Text style={{fontWeight: "700"}}>Inicio</Text>
+              <TouchableOpacity>
+              </TouchableOpacity>
           </View>
-          </View>
-        );
-    }
+        </SafeAreaView>
+      <View style={styles.container3}>
+        <Text>HOLA</Text>
+      </View>
+      </View>
+    );
 }
-
 const styles = StyleSheet.create({
   
   container: {

@@ -1,7 +1,9 @@
-import React from 'react'
-import { createAppContainer, createSwitchNavigator } from 'react-navigation'
-import { createStackNavigator } from 'react-navigation-stack'
-import { createBottomTabNavigator } from 'react-navigation-tabs'
+import React, { useState, useEffect } from 'react'
+
+import { createStackNavigator } from '@react-navigation/stack'
+import { NavigationContainer } from '@react-navigation/native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+
 import { Ionicons } from '@expo/vector-icons'
 
 import LoadingScreen from  './screens/LoadingScreen'
@@ -16,113 +18,64 @@ import SettingsScreen from './screens/SettingsScreen'
 import EditProfileScreen from './screens/EditProfileScreen'
 
 import * as constants from './constants/constants'
-
 import Fire from './Fire'
-
 import Firetimerbug from './firetimerbug'
+import firebase from 'firebase';
 
-const AppContainer = createStackNavigator(
-  {
-    default: createBottomTabNavigator({
-      Home: {
-        screen: HomeScreen,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => <Ionicons name="ios-home" size={24} color={tintColor}></Ionicons>
-        }
-      },
-      Message: {
-        screen: MessageScreen,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => <Ionicons name="ios-chatboxes" size={24} color={tintColor}></Ionicons>
-        }
-      },
-      Post: {
-        screen: PostScreen,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => 
-            <Ionicons 
-              name="ios-add-circle" 
-              size={48} 
-              color={tintColor}
-              style={{
-                shadowOffset: { width: 0, height: 0},
-                shadowRadius: 10,
-                shadowOpacity: 0.3
-              }}>
-            </Ionicons>
-        }
-      },
-      Profile: {
-        screen: ProfileScreen,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => <Ionicons name="ios-person" size={24} color={tintColor}></Ionicons>
-        }   
-      },
-      Notification: {
-        screen: SettingsScreen,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => <Ionicons name="md-settings" size={24} color={tintColor}></Ionicons>
-        }
-      }
-      
-    },
-    {
-      defaultNavigationOptions: {
-        tabBarOnPress: ({navigation, defaultHandler}) => {
-          if(navigation.state.key === "Post"){
-            navigation.navigate("postModal")
-          }
-          else {
-            defaultHandler()
-          }
-        }
-      },
-      tabBarOptions: {
-        activeTintColor: constants.CORP_PINK,
-        showLabel: false,
-        style: {
-          borderTopWidth: 1
-        }
-      }
-    }),
-    postModal: {
-      screen: PostScreen
-    },
-    
-    editProfile: {
-      screen: EditProfileScreen
-    }
-  },
-  {
-    mode: "modal",
-    headerMode: "none"
-  }
-)
 
-const AuthStack = createStackNavigator({
-  Login: {
-    screen: LoginScreen,
-    navigationOptions: {
-      headerShown: false
-    }
-  },
-  Register: {
-    screen: RegisterScreen,
-    navigationOptions: {
-      headerShown: false
-    }
-  }
-})
 
-export default createAppContainer(
-  createSwitchNavigator(
-      {
-        Loading: LoadingScreen,
-        App: AppContainer,
-        Auth: AuthStack
-      },
-      {
-        initialRouteName: "Loading"
-      }
-  )
-)
+const AuthStack = createStackNavigator();
+const AuthStackScreens = () => (
+  <AuthStack.Navigator headerMode="none">
+    <AuthStack.Screen
+      name="Login"
+      component={LoginScreen}>
+    </AuthStack.Screen>
+    <AuthStack.Screen
+      name="Register"
+      component={RegisterScreen}>
+    </AuthStack.Screen>
+  </AuthStack.Navigator>
+);
+
+const RootStack = createStackNavigator();
+const RootStackScreens = (isUser) => (
+  
+  <RootStack.Navigator headerMode="none">
+    {console.log(isUser) && isUser ? (
+      <RootStack.Screen name="App" component={HomeScreen}/>
+    ) : (
+      <RootStack.Screen name="Auth" component={AuthStackScreens}/>
+    )}
+  </RootStack.Navigator>
+);
+
+const ProfileStack = createStackNavigator();
+
+const MainTab = createBottomTabNavigator();
+
+export default function App() {
+  const [isLoading, setIsLoading] = useState(true)
+  const [isUser, setUser] = useState(false)
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false)
+      firebase.auth().onAuthStateChanged(user => {
+        if(user){
+          setUser(true)
+        }
+      })
+    }, 1000);
+  }, []);
+
+  return (
+    <NavigationContainer>
+      {isLoading ? (
+        <LoadingScreen/>
+      ) : (
+        <RootStackScreens isUser={isUser}/>
+      )}
+    </NavigationContainer>
+  );
+};

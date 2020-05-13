@@ -4,28 +4,26 @@ import { Ionicons } from '@expo/vector-icons'
 
 import * as constants from '../constants/constants'
 
-export default class NotificationScreen extends React.Component {
+export default function NotificationScreen() {
 
-    render(){
-        return (
-            <View style={styles.container}>
-                <SafeAreaView style={styles.container2}>
-                    <View style={styles.header}>
-                        <TouchableOpacity>   
-                        </TouchableOpacity>
-                        <Text style={{fontWeight: "700"}}>Notificaciones</Text>
-                        <TouchableOpacity>
-                            <Ionicons 
-                                name="ios-notifications" 
-                                size={25} 
-                                color={constants.CORP_PINK}
-                            ></Ionicons> 
-                        </TouchableOpacity> 
-                    </View>
-                </SafeAreaView>
-            </View>
-      );
-    }
+    return (
+        <View style={styles.container}>
+            <SafeAreaView style={styles.container2}>
+                <View style={styles.header}>
+                    <TouchableOpacity>   
+                    </TouchableOpacity>
+                    <Text style={{fontWeight: "700"}}>Notificaciones</Text>
+                    <TouchableOpacity>
+                        <Ionicons 
+                            name="ios-notifications" 
+                            size={25} 
+                            color={constants.CORP_PINK}
+                        ></Ionicons> 
+                    </TouchableOpacity> 
+                </View>
+            </SafeAreaView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
