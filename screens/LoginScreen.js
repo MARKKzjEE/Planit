@@ -1,28 +1,32 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation } from 'react-native';
 
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 
- import * as constants from '../constants/constants'
+import * as constants from '../constants/constants'
 
 export default function LoginScreen({navigation}) {
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [errorMessage, setErrorMessage] = useState("")
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   const changeScreen = () => {
     navigation.push('Register');
-  }
+  };
 
   const handleLogin = () => {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        console.log("User Logged!")
+      })
       .catch(error => setErrorMessage(error.message));
-  }
-
-  LayoutAnimation.easeInEaseOut();
+  };
+  
+  //LayoutAnimation.easeInEaseOut()
   return (
 
     <View style={styles.container}>

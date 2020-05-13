@@ -4,7 +4,12 @@ import { Ionicons } from '@expo/vector-icons'
 
 import * as constants from '../constants/constants'
 
-export default function SettingsScreen() {
+export default function SettingsScreen({navigation}) {
+
+    const changeScreen = () => {
+        navigation.push('Notifications');
+    };
+    
 
     return (
         <View style={styles.container}>
@@ -13,7 +18,7 @@ export default function SettingsScreen() {
                     <TouchableOpacity>   
                     </TouchableOpacity>
                     <Text style={{fontWeight: "700"}}>Configuración</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={changeScreen}>
                         <Ionicons 
                             name="ios-notifications" 
                             size={25} 

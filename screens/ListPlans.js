@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 
 import * as constants from '../constants/constants'
 
-export default function MessageScreen() {
+export default function ListPlans() {
 
     return (
         <View style={styles.container}>

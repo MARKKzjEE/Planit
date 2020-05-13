@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as constants from '../constants/constants'
 import firebase from 'firebase'
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen() {
   
   const [email, setEmail] = useState("")
   const [displayName, setDisplayName] = useState("")
@@ -28,6 +28,9 @@ export default function HomeScreen({navigation}) {
         </SafeAreaView>
       <View style={styles.container3}>
         <Text>HOLA</Text>
+        <TouchableOpacity onPress={() => firebase.auth().signOut()}>
+          <Text>ADIOS</Text>
+        </TouchableOpacity>
       </View>
       </View>
     );

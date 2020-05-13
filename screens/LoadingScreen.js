@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, ImageBackground, ActivityIndicator } from 'react-native';
-import { Asset } from 'expo-asset';
-import { AppLoading } from 'expo';
 import firebase from 'firebase'
+import { useEffect } from 'react';
 
-export default function LoadingScreen() {
-  
+export default function LoadingScreen({navigation}) {
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      firebase.auth().onAuthStateChanged(user => {
+        navigation.navigate(user ? "App" : "Auth")
+      })
+    }, 1000)
+  }, []);
+
   return (
     <ImageBackground
       style={styles.splashIMG}

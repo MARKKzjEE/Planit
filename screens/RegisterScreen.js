@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutA
 import { Ionicons } from '@expo/vector-icons'
 import * as constants from '../constants/constants'
 
-import * as firebase from 'firebase';
 import Fire from '../Fire'
 
 import UserPermissions from '../utilities/UserPermissions'
