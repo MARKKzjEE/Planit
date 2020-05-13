@@ -22,8 +22,8 @@ import Fire from './Fire'
 import Firetimerbug from './firetimerbug'
 import firebase from 'firebase';
 
+/*1. Navegación inicial. Cargas y Control Usuario*/
 const RootStack = createStackNavigator();
-
 const AuthStack = createStackNavigator();
 const AuthStackScreens = () => (
   <AuthStack.Navigator headerMode="none">
@@ -37,51 +37,102 @@ const AuthStackScreens = () => (
     </AuthStack.Screen>
   </AuthStack.Navigator>
 );
+/*------------------------------------------------------------------*/
 
+/*2. Contenedor de Tabs y pilas de tabs*/
 const AppContainer = createStackNavigator();
 const AppContainerScreens = () => (
-  <AppContainer.Navigator headerMode="none">
+  <AppContainer.Navigator>
     <AppContainer.Screen name="Home" component={MainTabScreens}/>
   </AppContainer.Navigator>
 );
+/*-------------------------------------------------------------------*/
 
-const ProfileStack = createStackNavigator();
+/*3. Pantallas Tab flujo principal*/
 const MainTab = createBottomTabNavigator();
-const MainTabScreens = () => (
-  <MainTab.Navigator initialRouteName="Home">
-    <MainTab.Screen
-      name="Home" 
-      component={HomeScreen} 
-      options={{tabBarIcon: ({ tintColor }) => <Ionicons name="ios-home" size={24} color={tintColor}></Ionicons>}}>
-    </MainTab.Screen>
-    <MainTab.Screen
-      name="ListPlans" 
-      component={ListPlans} 
-      options={{tabBarIcon: ({ tintColor }) => <Ionicons name="md-hourglass" size={24} color={tintColor}></Ionicons>}}>
-    </MainTab.Screen>
-    <MainTab.Screen
-      name="Post" 
-      component={PostScreen} 
-      options={{tabBarIcon: ({ tintColor }) => 
-        <Ionicons 
-          name="ios-add-circle" 
-          size={48} 
-          color={tintColor} 
-          style={{shadowOffset: {width:0, height:0}}}>
-        </Ionicons>}}>
-    </MainTab.Screen>
-    <MainTab.Screen
-      name="Profile" 
-      component={ProfileScreen} 
-      options={{tabBarIcon: ({ tintColor }) => <Ionicons name="ios-person" size={24} color={tintColor}></Ionicons>}}>
-    </MainTab.Screen>
-    <MainTab.Screen
-      name="Settings" 
-      component={SettingsScreen} 
-      options={{tabBarIcon: ({ tintColor }) => <Ionicons name="md-settings" size={24} color={tintColor}></Ionicons>}}>
-    </MainTab.Screen>
-  </MainTab.Navigator>
-);
+const MainTabScreens = ({navigation, route}) => {
+  navigation.setOptions({headerTitle: getHeaderTitle(route)});
+  return( 
+    <MainTab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon:({color,size}) => {
+          let iconName
+          if(route.name == 'Home'){
+            iconName = 'ios-home'
+          } 
+          else if(route.name == 'ListPlans'){
+            iconName = 'md-list-box'
+          }
+          else if(route.name == 'Post'){
+            iconName = 'ios-add-circle'
+            size = 48
+          }
+          else if(route.name == 'Profile'){
+            iconName = 'ios-person'
+          }
+          else if(route.name == 'Settings'){
+            iconName = 'ios-settings'
+          }
+          return <Ionicons name={iconName} size={size} color={color}/>
+        }
+      })}
+      tabBarOptions={{
+        activeTintColor: constants.CORP_PINK,
+        inactiveTintColor: constants.CORP_GREY,
+        showLabel: false,
+      }}>
+
+      <MainTab.Screen name="Home" component={HomeScreen}/>
+      <MainTab.Screen name="ListPlans" component={ListPlans}/>
+      <MainTab.Screen name="Post" component={PostScreen}/>
+      <MainTab.Screen name="Profile" component={ProfileScreen}/>
+      <MainTab.Screen name="Settings" component={SettingsStackScreens}/>
+
+    </MainTab.Navigator>
+  );
+};
+
+function getHeaderTitle(route){
+  const routeName = route.state? route.state.routes[route.state.index].name
+  :'Home';
+  switch(routeName){
+    case 'Home':
+      return 'Inicio';
+    case 'ListPlans':
+      return 'Planes Activos';
+    case 'Post':
+      return 'Mi Plan';
+    case 'Profile':
+      return 'Perfil';
+    case 'Settings':
+      return 'Configuración';
+  };
+};
+/*---------------------------------------------------------------------*/
+/*4. Pilas que salen de tabs*/
+
+/*4.1 Pila Perfil Usuario*/
+const ProfileStack = createStackNavigator();
+const ProfileStackScreens = ({navigation, routes}) => {
+  return(
+    <ProfileStack.Navigator >
+      <ProfileStack.Screen name="Profile" component={ProfileScreen}/>
+      <ProfileStack.Screen  name="EditProfile" component={EditProfileScreen}/>
+    </ProfileStack.Navigator>
+  )
+};
+
+/*4.2 Pila Configuración y notificaciones*/
+const SettingsStack = createStackNavigator();
+const SettingsStackScreens = ({navigation, routes}) => {
+  return(
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen name="Settings" component={SettingsScreen}/>
+      <SettingsStack.Screen name="Notifications" component={NotificationsScreen}/>
+    </SettingsStack.Navigator>
+  )
+};
+/*--------------------------------------------------------------------*/
 
 export default () => {
   return(

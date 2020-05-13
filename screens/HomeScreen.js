@@ -10,14 +10,8 @@ export default function HomeScreen() {
   const [email, setEmail] = useState("")
   const [displayName, setDisplayName] = useState("")
 
-  useEffect(() => {
-    console.log(firebase.auth().currentUser)
-  })
-
-  LayoutAnimation.easeInEaseOut();
-    return (
-      <View style={styles.container}>
-        <SafeAreaView style={styles.container2}>
+  /*
+  <SafeAreaView style={styles.container2}>
           <View style={styles.header}>
               <TouchableOpacity>   
               </TouchableOpacity>
@@ -26,6 +20,12 @@ export default function HomeScreen() {
               </TouchableOpacity>
           </View>
         </SafeAreaView>
+    */
+
+  LayoutAnimation.easeInEaseOut();
+    return (
+      <View style={styles.container}>
+        
       <View style={styles.container3}>
         <Text>HOLA</Text>
         <TouchableOpacity onPress={() => firebase.auth().signOut()}>
@@ -38,7 +38,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   
   container: {
-    flex: 1
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   },
   container2: {
     flex: 1,
