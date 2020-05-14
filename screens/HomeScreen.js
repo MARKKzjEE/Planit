@@ -1,46 +1,23 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, LayoutAnimation } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'
 
-import * as firebase from 'firebase'
+import * as constants from '../constants/constants'
+import firebase from 'firebase'
 
-export default class HomeScreen extends React.Component {
-    
-  state = {
-    email: "",
-    displayName: ""
-  };
-
-  componentDidMount() {
-    const { email, displayName } = firebase.auth().currentUser;
-    this.setState({ email, displayName});
-  }
-
-  signOutUser = () => {
-    firebase.auth().signOut();
-  };
+export default function HomeScreen() {
   
-  componentWillUnmount(){}
-
-  render(){
-
-        LayoutAnimation.easeInEaseOut();
-
-        return (
-            <View style={styles.container}>
-              <Text>Hola {this.state.email}!</Text>
-
-              <TouchableOpacity style={{marginTop:32}} onPress={this.signOutUser}>
-                <Text>Logout</Text>
-              </TouchableOpacity>
-            </View>
-        )
-    }
+  return (
+    <View style={styles.container}>
+      <Text>EN CONSTRUCCIÓN!</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
+    justifyContent: "center",
+    alignItems: "center"
+  },
 });

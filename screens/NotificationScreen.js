@@ -1,21 +1,28 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, TextInput } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'
 
-export default class NotificationScreen extends React.Component {
+import * as constants from '../constants/constants'
 
-    render(){
-        return (
-            <View style={styles.container}>
-                <Text> Notification Screen</Text>
+export default function NotificationScreen() {
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.container2}>
+                <Text>EN CONSTRUCCIÓN!</Text>
             </View>
-      );
-    }
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
+  
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+    },
+    container2:{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center"
     }
 })

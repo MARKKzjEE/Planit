@@ -1,82 +1,80 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation } from 'react-native';
 
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 
-export default class LoginScreen extends React.Component {
+import * as constants from '../constants/constants'
 
-  state={
-    email:"",
-    password:"",
-    errorMessage: null
-  }
+export default function LoginScreen({navigation}) {
 
-  changeScreen = () => {
-    this.props.navigation.navigate('Register');
-  }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  handleLogin = () => {
-    const {email, password} = this.state
 
+  const changeScreen = () => {
+    navigation.push('Register');
+  };
+
+  const handleLogin = () => {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .catch(error => this.setState({errorMessage: error.message}));
-  }
-
-  componentWillUnmount() {}
+      .then(() => {
+        console.log("User Logged!")
+      })
+      .catch(error => setErrorMessage(error.message));
+  };
   
-    render(){
-      LayoutAnimation.easeInEaseOut();
-        return (
+  //LayoutAnimation.easeInEaseOut()
+  return (
 
-          <View style={styles.container}>
-            
-            <StatusBar hidden></StatusBar>
+    <View style={styles.container}>
+      
+      <StatusBar hidden></StatusBar>
 
-            <Text style={styles.logo}>PLANIT</Text>
+      <Text style={styles.logo}>PLANIT</Text>
 
-            <View style={styles.errorMsg}>
-              {this.state.errorMessage && <Text style={styles.error}>{this.state.errorMessage}</Text>}
-            </View>
-            
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Email..."
-                autoCapitalize="none"
-                placeholderTextColor= "grey"
-                onChangeText={email => this.setState({ email })}
-                value={this.state.email}>
-              </TextInput>
+      <View style={styles.errorMsg}>
+      {errorMessage !== "" && <Text style={styles.error}>{errorMessage}</Text>}
+      </View>
+      
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Email..."
+          autoCapitalize="none"
+          placeholderTextColor= "grey"
+          onChangeText={email => setEmail(email)}
+          value={email}>
+        </TextInput>
 
-              <TextInput
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.inputText}
-                placeholder="Contraseña..."
-                placeholderTextColor= "grey"
-                onChangeText={password => this.setState({ password })}
-                value={this.state.password}>
-              </TextInput>
-            </View>
+        <TextInput
+          secureTextEntry
+          autoCapitalize="none"
+          style={styles.inputText}
+          placeholder="Contraseña..."
+          placeholderTextColor= "grey"
+          onChangeText={password => setPassword(password)}
+          value={password}>
+        </TextInput>
+      </View>
 
-            <TouchableOpacity>
-              <Text style={{color:"#fa526c", fontSize:15}}>Olvidaste la constraseña?</Text>
-            </TouchableOpacity>
+      <TouchableOpacity>
+        <Text style={{color:"#fa526c", fontSize:15}}>Olvidaste la constraseña?</Text>
+      </TouchableOpacity>
 
-            <TouchableOpacity style={styles.LoginBtn} onPress={this.handleLogin}>
-              <Text style={styles.buttonText}>Log in</Text>
-            </TouchableOpacity> 
-            
-            <TouchableOpacity style={{alignSelf:"center", marginTop:25}} onPress={this.changeScreen}>
-              <Text style={{color:"grey", fontSize:15}}>
-                Nuevo en Planit? <Text style={{fontWeight:"500", color:"#fa526c"}}> Regístrate</Text> 
-              </Text>
-            </TouchableOpacity>
-        </View>
-      );
-  }
+      <TouchableOpacity style={styles.LoginBtn} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Log in</Text>
+      </TouchableOpacity> 
+      
+      <TouchableOpacity style={{alignSelf:"center", marginTop:25}} onPress={changeScreen}>
+        <Text style={{color:"grey", fontSize:15}}>
+          Nuevo en Planit? <Text style={{fontWeight:"500", color:"#fa526c"}}> Regístrate</Text> 
+        </Text>
+      </TouchableOpacity>
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -111,7 +109,9 @@ inputText: {
   borderBottomColor: 'black',
   borderBottomWidth: StyleSheet.hairlineWidth,
   fontSize: 17,
-  marginBottom: 15
+  marginBottom: 15,
+  borderBottomColor: constants.CORP_GREY,
+  borderBottomWidth: 1
 },
 LoginBtn: {
   width: "75%",

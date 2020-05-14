@@ -1,89 +1,93 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'
+import * as constants from '../constants/constants'
 
-import * as firebase from 'firebase';
+import Fire from '../Fire'
+import firebase from 'firebase'
 
-export default class RegisterScreen extends React.Component {
+import UserPermissions from '../utilities/UserPermissions'
+import * as ImagePicker from 'expo-image-picker';
 
-  state={
-    name: "",
-    email:"",
-    password:"",
-    errorMessage: null
+export default function RegisterScreen({navigation}) {
+
+  const [regUser, setRegUser] = useState({})
+
+  const handlePickAvatar = async () => {
+
+    UserPermissions.getPhotoPermission();
+    console.log(firebase.auth().currentUser)
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3]
+    });
+    if(!result.cancelled) {
+        setRegUser({...regUser, avatar: result.uri});
+    }
   }
 
-  changeScreen = () => {
-    this.props.navigation.navigate('Register');
+  const handleSignUp = () => {
+    Fire.shared.createUser(regUser);
+    //console.log(regUser);
   }
 
-  handleSignUp = () => {
+  LayoutAnimation.easeInEaseOut();
 
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(userCredentials => {
-        return userCredentials.user.updateProfile({
-          displayName: this.state.name
-        });
-      })
-      .catch(error => this.setState({errorMessage: error.message}));
-  }
-
-    render(){
-      LayoutAnimation.easeInEaseOut();
-        return (
-          <View style={styles.container}>
-            
-            <StatusBar hidden></StatusBar>
-
-            <Text style={styles.logo}>Regístrate para empezar!</Text>
-
-            <View style={styles.errorMsg}>
-              {this.state.errorMessage && <Text style={styles.error}>{this.state.errorMessage}</Text>}
-            </View>
-            
-            <View style={styles.inputView}>
-            <TextInput
-                style={styles.inputText}
-                placeholder="Nombre Completo..."
-                autoCapitalize="none"
-                placeholderTextColor= "grey"
-                onChangeText={name => this.setState({ name })}
-                value={this.state.name}>
-              </TextInput>
-
-              <TextInput
-                style={styles.inputText}
-                placeholder="Email..."
-                autoCapitalize="none"
-                placeholderTextColor= "grey"
-                onChangeText={email => this.setState({ email })}
-                value={this.state.email}>
-              </TextInput>
-
-              <TextInput
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.inputText}
-                placeholder="Contraseña..."
-                placeholderTextColor= "grey"
-                onChangeText={password => this.setState({ password })}
-                value={this.state.password}>
-              </TextInput>
-            </View>
-
-            <TouchableOpacity style={styles.LoginBtn} onPress={this.handleSignUp}>
-              <Text style={styles.buttonText}>Completar</Text>
-            </TouchableOpacity> 
-            
-            <TouchableOpacity style={{alignSelf:"center", marginTop:25}} onPress={this.changeScreen}>
-              <Text style={{color:"grey", fontSize:15}}>
-                Nuevo en Planit? <Text style={{fontWeight:"500", color:"#fa526c"}}> Regístrate</Text> 
-              </Text>
-            </TouchableOpacity>
+    return (
+      <View style={styles.container}>
+        <StatusBar hidden></StatusBar>
+        <TouchableOpacity style={styles.back} onPress={ () => navigation.goBack()}>
+          <Ionicons name="ios-arrow-round-back" size={32} color={constants.CORP_PINK}></Ionicons>
+        </TouchableOpacity>
+        
+        <View style={{position:"absolute", top:80, alignItems:"center", width: "100%"}}>
+          <Text style={styles.logo}>Regístrate para empezar!</Text>
+          <TouchableOpacity style={styles.avatarPlaceholder} onPress={handlePickAvatar}>
+            <Image source={{uri: regUser.avatar}} style={styles.avatar}></Image>
+            <Ionicons
+              name="ios-add"
+              size={75}
+              color="white">
+            </Ionicons>
+          </TouchableOpacity>
         </View>
-      );
-  }
+
+        <View style={styles.inputView}>
+        <TextInput
+            style={styles.inputText}
+            placeholder="Nombre Completo..."
+            autoCapitalize="none"
+            placeholderTextColor= "grey"
+            onChangeText={name => setRegUser({...regUser, name})}
+            value={regUser.name}>
+          </TextInput>
+
+          <TextInput
+            style={styles.inputText}
+            placeholder="Email..."
+            autoCapitalize="none"
+            placeholderTextColor= "grey"
+            onChangeText={email => setRegUser({...regUser, email})}
+            value={regUser.email}>
+          </TextInput>
+
+          <TextInput
+            secureTextEntry
+            autoCapitalize="none"
+            style={styles.inputText}
+            placeholder="Contraseña..."
+            placeholderTextColor= "grey"
+            onChangeText={password => setRegUser({...regUser, password})}
+            value={regUser.password}>
+          </TextInput>
+        </View>
+
+        <TouchableOpacity style={styles.LoginBtn} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Completar</Text>
+        </TouchableOpacity> 
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -93,25 +97,39 @@ container: {
   justifyContent: 'center',
   backgroundColor: "white"
 },
+back: {
+  position:"absolute",
+  top:30,
+  left:32,
+  width:32,
+  height:32,
+  alignItems:"center",
+  justifyContent:"center"
+},
+avatarPlaceholder: {
+  width:100,
+  height:100,
+  borderRadius:50,
+  backgroundColor:constants.CORP_GREY,
+  marginTop: 15,
+  justifyContent:"center",
+  alignItems:"center"
+},
+avatar: {
+  position: "absolute",
+  width:100,
+  height:100,
+  borderRadius:50,
+},
 logo: {
   fontWeight:"bold",
   fontSize:25,
-  color: '#fa526c',
-},
-errorMsg: {
-  height:50,
-  marginHorizontal:30,
-  marginTop: 15
-},
-error: {
-  fontWeight:"600",
-  fontSize:13,
-  color: "red",
-  textDecorationLine: 'underline'
+  color: constants.CORP_PINK,
 },
 inputView: {
   width: "85%",
-  marginBottom: 30
+  marginBottom: 30,
+  marginTop: 100
 },
 inputText: {
   height: 50,
@@ -119,7 +137,9 @@ inputText: {
   borderBottomColor: 'black',
   borderBottomWidth: StyleSheet.hairlineWidth,
   fontSize: 17,
-  marginBottom: 15
+  marginBottom: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: constants.CORP_GREY
 },
 LoginBtn: {
   width: "75%",
@@ -127,7 +147,7 @@ LoginBtn: {
   borderRadius:4,
   height:50,
   alignItems:"center",
-  justifyContent:"center",
+  justifyContent:"center"
 },
 buttonText: {
   color: "white"
