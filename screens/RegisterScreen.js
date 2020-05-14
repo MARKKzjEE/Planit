@@ -1,38 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, LayoutAnimation, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import * as constants from '../constants/constants'
 
 import Fire from '../Fire'
+import firebase from 'firebase'
 
 import UserPermissions from '../utilities/UserPermissions'
 import * as ImagePicker from 'expo-image-picker';
 
 export default function RegisterScreen({navigation}) {
 
-  const [regUser, setRegUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-    avatar: null
-  })
+  const [regUser, setRegUser] = useState({})
 
   const handlePickAvatar = async () => {
 
     UserPermissions.getPhotoPermission();
-
+    console.log(firebase.auth().currentUser)
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3]
-    }); 
+    });
     if(!result.cancelled) {
-        setRegUser({ regUser: {...regUser, avatar: result.uri }});
+        setRegUser({...regUser, avatar: result.uri});
     }
   }
 
   const handleSignUp = () => {
-    Fire.shared.createUser(regUser)
+    Fire.shared.createUser(regUser);
+    //console.log(regUser);
   }
 
   LayoutAnimation.easeInEaseOut();

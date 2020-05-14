@@ -16,7 +16,9 @@ export default function ProfileScreen({navigation, route})  {
     const [avatar, setAvatar] = useState("")
 
     useEffect(() => {
-        refreshScreen();
+        //refreshScreen();
+        loadInfo();
+        loadImages();
     },[]);
 
     const signOutUser = () => {
@@ -34,6 +36,7 @@ export default function ProfileScreen({navigation, route})  {
     
     /* 1. Cargar imágenes desde la DB */
     const loadImages = async () => {
+        setImages([]);
         firebase.firestore()
             .collection('gallery').where('uid', '==', firebase.auth().currentUser.uid).get()
             .then((snapshot) => {
@@ -42,8 +45,7 @@ export default function ProfileScreen({navigation, route})  {
                         setImages([...images, doc.data()])
                     });
                 }
-                console.log("Galeria Cargada.")
-                console.log(images)
+                console.log("Query imagenes: ", images);
             })
             .catch((error) => {
                 console.log(error)
@@ -54,11 +56,11 @@ export default function ProfileScreen({navigation, route})  {
         firebase.firestore()
         .collection("users").doc(firebase.auth().currentUser.uid).get()
         .then(doc => {
-            setName(doc.data().name)
-            setDescription(doc.data().description)
-            setAvatar(doc.data().avatar)
-            console.log("Información cargada.")
-            console.log(firebase.auth().currentUser.uid)
+            setName(doc.data().name);
+            setDescription(doc.data().description);
+            setAvatar(doc.data().avatar);
+            console.log("UID :", firebase.auth().currentUser.uid);
+            console.log("Query doc: ", doc.data());
         })
         .catch((error) => {
             console.log(error)
