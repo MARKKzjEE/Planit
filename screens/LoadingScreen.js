@@ -8,7 +8,7 @@ export default function LoadingScreen({navigation}) {
   React.useEffect(() => {
     setTimeout(() => {
       firebase.auth().onAuthStateChanged(user => {
-        navigation.navigate(user ? "App" : "Auth")
+        navigation.navigate(user ? "Home" : "Auth")
       })
     }, 1000)
   }, []);

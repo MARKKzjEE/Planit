@@ -11,14 +11,25 @@ import Fire from '../Fire';
 const firebase = require("firebase");
 require("@firebase/firestore");
 
-export default function PostScreen({route, navigation}) {
+export default function PostScreen({navigation, route}) {
 
-    { }
+    navigation.setOptions({
+        headerRight:() => (
+            <TouchableOpacity style={{marginRight: 20}}>
+                <Ionicons 
+                    name="md-checkbox" 
+                    size={30} 
+                    color={constants.CORP_PINK}
+                    onPress={handleEdit}>
+                </Ionicons>
+            </TouchableOpacity>
+        ),
+    }, []);
 
-    const [name, setName] = useState("")
-    const [avatar, setAvatar] = useState("")
+    const [name, setName] = useState(route.params.name1)
+    const [avatar, setAvatar] = useState(route.params.avatar1)
     const [avatarChange, setAvatarChange] = useState(false)
-    const [description, setDescription] = useState("")
+    const [description, setDescription] = useState(route.params.description1)
 
     /* 2.Escoger imagen de galería nativa y cargarla en la DB */
     const pickImage = async () => {
@@ -74,27 +85,6 @@ export default function PostScreen({route, navigation}) {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={styles.headerContainer}>
-                <TouchableOpacity style={styles.header}>
-                    <TouchableOpacity>
-                        <Ionicons 
-                            name="md-arrow-back" 
-                            size={23} 
-                            color={constants.CORP_PINK} 
-                            onPress={ () => navigation.goBack() }>
-                        </Ionicons>   
-                    </TouchableOpacity>
-                        <Text style={{fontWeight: "700"}}>Editar Perfil</Text>
-                    <TouchableOpacity>
-                        <Ionicons 
-                            name="md-checkbox" 
-                            size={23} 
-                            color={constants.CORP_PINK}
-                            onPress={auxiliarFunction}>
-                            </Ionicons>
-                    </TouchableOpacity> 
-                </TouchableOpacity>
-            </SafeAreaView>
             <View style={styles.personalContainer}>
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.nameContainer}>{name}</Text>
@@ -138,20 +128,7 @@ export default function PostScreen({route, navigation}) {
 const styles = StyleSheet.create({
   
     container: {
-      flex: 1
-    },
-    headerContainer: {
       flex: 1,
-      maxHeight: 75
-    },
-    header: {
-        marginTop: 25,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingHorizontal: 32,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: constants.CORP_GREY,  
     },
     personalContainer: {
         flex: 1,
@@ -192,7 +169,7 @@ const styles = StyleSheet.create({
     descriptionInputView: {
         borderWidth: 1,
         height: 125,
-        width: 250,
+        width: "90%",
         borderRadius: 20,
         borderColor: constants.CORP_GREY,
     },

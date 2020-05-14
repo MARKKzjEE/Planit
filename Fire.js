@@ -119,14 +119,13 @@ class Fire {
     updateAvatarAndInfo = async (pickAvatar, localUri, description) => {
         
         let db = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
-            db.update({
-                description: description
-            });
-        
+            db.set({description: description}, {merge:true});
+        console.log("hola si entro")
         if(pickAvatar){
             await this.uploadPhotoAsync(localUri, `avatars/${firebase.auth().currentUser.uid}/${Date.now()}`)
                 .then((remoteUri) => {
                     db.update({ avatar: remoteUri })
+                    console.log("soy pro")
                 })
                 .catch((error) => {
                     console.log(error)

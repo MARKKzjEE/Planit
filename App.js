@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 
-import { createStackNavigator } from '@react-navigation/stack'
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
@@ -23,7 +23,7 @@ import Firetimerbug from './firetimerbug'
 import firebase from 'firebase';
 
 /*1. Navegación inicial. Cargas y Control Usuario*/
-const RootStack = createStackNavigator();
+const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const AuthStackScreens = () => (
   <AuthStack.Navigator headerMode="none">
@@ -41,17 +41,29 @@ const AuthStackScreens = () => (
 
 /*2. Contenedor de Tabs y pilas de tabs*/
 const AppContainer = createStackNavigator();
-const AppContainerScreens = () => (
-  <AppContainer.Navigator>
-    <AppContainer.Screen name="Home" component={MainTabScreens}/>
-  </AppContainer.Navigator>
-);
+const AppContainerScreens = (navigation, route) => {
+  
+  return (
+    <AppContainer.Navigator 
+      screenOptions={{
+        headerTitleAlign: "center",
+        headerTintColor: constants.CORP_PINK,
+        }}>
+      <AppContainer.Screen 
+        name="Home" 
+        component={MainTabScreens}
+        options={({route}) => ({
+          title:getHeaderTitle(route),
+          headerShown: shouldHeaderBeShown(route),
+        })}/>
+    </AppContainer.Navigator>
+    );
+}
 /*-------------------------------------------------------------------*/
 
 /*3. Pantallas Tab flujo principal*/
 const MainTab = createBottomTabNavigator();
 const MainTabScreens = ({navigation, route}) => {
-  navigation.setOptions({headerTitle: getHeaderTitle(route)});
   return( 
     <MainTab.Navigator
       screenOptions={({route}) => ({
@@ -74,7 +86,7 @@ const MainTabScreens = ({navigation, route}) => {
             iconName = 'ios-settings'
           }
           return <Ionicons name={iconName} size={size} color={color}/>
-        }
+        },
       })}
       tabBarOptions={{
         activeTintColor: constants.CORP_PINK,
@@ -85,63 +97,100 @@ const MainTabScreens = ({navigation, route}) => {
       <MainTab.Screen name="Home" component={HomeScreen}/>
       <MainTab.Screen name="ListPlans" component={ListPlans}/>
       <MainTab.Screen name="Post" component={PostScreen}/>
-      <MainTab.Screen name="Profile" component={ProfileScreen}/>
+      <MainTab.Screen name="Profile" component={ProfileStackScreens}/>
       <MainTab.Screen name="Settings" component={SettingsStackScreens}/>
 
     </MainTab.Navigator>
   );
-};
-
-function getHeaderTitle(route){
-  const routeName = route.state? route.state.routes[route.state.index].name
-  :'Home';
-  switch(routeName){
-    case 'Home':
-      return 'Inicio';
-    case 'ListPlans':
-      return 'Planes Activos';
-    case 'Post':
-      return 'Mi Plan';
-    case 'Profile':
-      return 'Perfil';
-    case 'Settings':
-      return 'Configuración';
-  };
 };
 /*---------------------------------------------------------------------*/
 /*4. Pilas que salen de tabs*/
 
 /*4.1 Pila Perfil Usuario*/
 const ProfileStack = createStackNavigator();
-const ProfileStackScreens = ({navigation, routes}) => {
+const ProfileStackScreens = ({navigation, route}) => {
+  
+  if(route.state) {
+    navigation.setOptions({
+      tabBarVisible: route.state.index > 0  ? false : true
+    });
+  }
+  
   return(
-    <ProfileStack.Navigator >
-      <ProfileStack.Screen name="Profile" component={ProfileScreen}/>
-      <ProfileStack.Screen  name="EditProfile" component={EditProfileScreen}/>
+    <ProfileStack.Navigator screenOptions={{
+      headerTitleAlign: "center",
+      headerTintColor: constants.CORP_PINK
+    }}>
+      <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{headerShown: false}}/>
+      <ProfileStack.Screen  name="EditProfile" component={EditProfileScreen} options={{title:"Edita Mi Perfil"}}/>
     </ProfileStack.Navigator>
   )
 };
 
 /*4.2 Pila Configuración y notificaciones*/
 const SettingsStack = createStackNavigator();
-const SettingsStackScreens = ({navigation, routes}) => {
+const SettingsStackScreens = ({navigation, route}) => {
+  
+  if(route.state) {
+    navigation.setOptions({
+      tabBarVisible: route.state.index > 0  ? false : true
+    });
+  }
+  
   return(
-    <SettingsStack.Navigator>
-      <SettingsStack.Screen name="Settings" component={SettingsScreen}/>
-      <SettingsStack.Screen name="Notifications" component={NotificationsScreen}/>
+    <SettingsStack.Navigator screenOptions={{
+      headerTitleAlign: "center",
+      headerTintColor: constants.CORP_PINK
+    }}>
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} options={{headerShown: false}}/>
+      <SettingsStack.Screen name="Notifications" component={NotificationsScreen} options={{title:'Notificaciones'}}/>
     </SettingsStack.Navigator>
   )
 };
 /*--------------------------------------------------------------------*/
 
+function getHeaderTitle(route){
+  const routeName = route.state? route.state.routes[route.state.index].name :'Home';
+  switch(routeName){
+    case 'Home':
+      return 'Inicio';
+    case 'ListPlans':
+      return 'Planes Activos';
+    case 'Post':
+      return 'Crea tu Plan!';
+    case 'Profile':
+      return 'Perfil';
+    case 'Settings':
+      return 'Configuración';
+    case 'EditProfile':
+      return 'Edita Mi Perfil';
+    case 'Notifications':
+      return 'Notificaciones';
+  };
+};
+
+function shouldHeaderBeShown(route) {
+  const routeName = route.state? route.state.routes[route.state.index].name : 'Home';
+  switch(routeName) {
+    case "Home":
+      return false;
+    case "ListPlans":
+      return false;
+    case "Profile":
+      return false;
+    case "Settings":
+      return false;
+  } 
+};
+
 export default () => {
   return(
   <NavigationContainer>
-  <RootStack.Navigator headerMode="none" initialRouteName="Loading">
-    <RootStack.Screen name="Loading" component={LoadingScreen}/>
-    <RootStack.Screen name="App" component={AppContainerScreens}/>
-    <RootStack.Screen name="Auth" component={AuthStackScreens}/>
-  </RootStack.Navigator>
+  <Stack.Navigator initialRouteName="Loading" screenOptions={{headerShown: false}}>
+    <Stack.Screen name="Loading" component={LoadingScreen}/>
+    <Stack.Screen name="Home" component={AppContainerScreens}/>
+    <Stack.Screen name="Auth" component={AuthStackScreens}/>
+  </Stack.Navigator>
   </NavigationContainer>
   );
 };

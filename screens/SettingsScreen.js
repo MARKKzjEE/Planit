@@ -10,23 +10,18 @@ export default function SettingsScreen({navigation}) {
         navigation.push('Notifications');
     };
     
-
     return (
         <View style={styles.container}>
-            <SafeAreaView style={styles.container2}>
-                <View style={styles.header}>
-                    <TouchableOpacity>   
-                    </TouchableOpacity>
-                    <Text style={{fontWeight: "700"}}>Configuración</Text>
-                    <TouchableOpacity onPress={changeScreen}>
-                        <Ionicons 
-                            name="ios-notifications" 
-                            size={25} 
-                            color={constants.CORP_PINK}
-                        ></Ionicons> 
-                    </TouchableOpacity> 
-                </View>
-            </SafeAreaView>
+            <TouchableOpacity style={styles.icon} onPress={changeScreen}>
+                <Ionicons 
+                    name="ios-notifications" 
+                    size={30}
+                    color={constants.CORP_PINK}>
+                </Ionicons> 
+            </TouchableOpacity> 
+            <View style={styles.container2}>
+                <Text>EN CONSTRUCCIÓN!</Text>
+            </View>
         </View>
     );
 }
@@ -34,20 +29,21 @@ export default function SettingsScreen({navigation}) {
 const styles = StyleSheet.create({
   
     container: {
-      flex: 1
+        flex: 1,
     },
-    container2: {
-      flex: 1,
-      maxHeight: 75
+    icon: {
+        position:"absolute",
+        top:40,
+        right:32,
+        width:32,
+        height:32,
+        alignItems:"center",
+        justifyContent:"center",
+        
     },
-    header: {
-        marginTop: 25,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingHorizontal: 32,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: constants.CORP_GREY,
-  
+    container2:{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center"
     }
 })

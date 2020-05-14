@@ -10,45 +10,40 @@ require("@firebase/firestore");
 
 export default function ProfileScreen({navigation, route})  {
 
-    const [images, setImages] = useState([{
-        id: "",
-        url: ""
-    }])
+    const [images, setImages] = useState([])
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [avatar, setAvatar] = useState("")
 
-    const signOutUser = () => {
-        firebase.auth().signOut();
-    };
+    useEffect(() => {
+        refreshScreen();
+    },[]);
 
-    const changeScreen = () => {
-        navigation.navigate('editProfile', {
-            name1: name,
-            description1: description,
-            avatar1: avatar
-        });
+    const signOutUser = () => {
+        setName("")
+        setDescription("")
+        setAvatar("")
+        setImages(null)
+        firebase.auth().signOut();
     };
 
     const refreshScreen = () => {
         loadInfo()
         loadImages()
-        console.log("ELLA ME LLAMA")
     };
     
     /* 1. Cargar imágenes desde la DB */
     const loadImages = async () => {
-        
         firebase.firestore()
             .collection('gallery').where('uid', '==', firebase.auth().currentUser.uid).get()
             .then((snapshot) => {
                 if(!snapshot.empty){
                     snapshot.forEach(doc => {
-                        setImages(images => [...images, doc.data()])
-                        setImagesId(imagesId => [...imagesId, doc.id])
+                        setImages([...images, doc.data()])
                     });
                 }
                 console.log("Galeria Cargada.")
+                console.log(images)
             })
             .catch((error) => {
                 console.log(error)
@@ -63,34 +58,25 @@ export default function ProfileScreen({navigation, route})  {
             setDescription(doc.data().description)
             setAvatar(doc.data().avatar)
             console.log("Información cargada.")
+            console.log(firebase.auth().currentUser.uid)
         })
         .catch((error) => {
             console.log(error)
         });
     }
     
-    useEffect(() => {
-        loadInfo()
-    }, []);
     
     return (
         <View style={styles.container}>
-            <SafeAreaView style={styles.container2}>
-                <View style={styles.header}>
-                    <TouchableOpacity>   
-                    </TouchableOpacity>
-                    <Text style={{fontWeight: "700"}}>Perfil</Text>
-                    <TouchableOpacity onPress={() => {
-                        navigation.navigate('editProfile', {
-                            name1: "hahahaha",
+            <TouchableOpacity style={styles.icon} onPress={() => {
+                        navigation.push('EditProfile', {
+                            name1: name,
                             description1: description,
                             avatar1: avatar
                         });
-                    }}>
-                        <Ionicons name="md-brush" size={23} color={constants.CORP_PINK}></Ionicons>
-                    </TouchableOpacity> 
-                </View>
-            </SafeAreaView>
+            }}>
+                <Ionicons name="md-brush" size={30} color={constants.CORP_PINK}></Ionicons>
+            </TouchableOpacity> 
 
             <View style={styles.personalContainer}>
                 <View style={styles.descriptionContainer}>
@@ -108,16 +94,16 @@ export default function ProfileScreen({navigation, route})  {
                     {avatar !== "" &&
                     <Image source={{ uri: avatar }} style={styles.avatar}></Image>
                     }
-                    <TouchableOpacity onPress={signOutUser} style={styles.editarAvatar}>
+                    <TouchableOpacity onPress={signOutUser} style={styles.desconectar}>
                         <Text style={{padding: 10, color: "white"}}>Desconectar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
             <View style={styles.imagesContainer}>
-                {images.length > 0  && images.map(item => 
-                    <Image style={styles.image} key={item.id} source={{uri: item.url}}></Image>
-                && item.url != "")}
+                {images && images.map((item, i) => 
+                    <Image style={styles.image} key={i} source={{uri: item.image}}></Image>
+                )}
             </View>
         </View>
     );
@@ -128,32 +114,28 @@ const styles = StyleSheet.create({
     container: {
       flex: 1
     },
-    container2: {
-      flex: 1,
-      maxHeight: 75
-    },
-    header: {
-        marginTop: 25,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingHorizontal: 32,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: constants.CORP_GREY,  
+    icon: {
+        position:"absolute",
+        top:40,
+        right:32,
+        width:32,
+        height:32,
+        alignItems:"center",
+        justifyContent:"center",
+        
     },
     personalContainer: {
         flex: 1,
         flexDirection: "row",
         justifyContent: "space-around",
         maxHeight: 200,
-        marginHorizontal: 20,
-        marginVertical: 20,
-        marginLeft: 50
+        marginTop: 80
     },
     descriptionContainer: {
         flex: 1,
         flexDirection: "column",
         height: 200,
+        marginLeft: 30,
     },
     nameContainer: {
         height: 50, 
@@ -162,38 +144,40 @@ const styles = StyleSheet.create({
     },
     avatarContainer: {
         marginTop: 10,
-        alignItems: "center"
+        alignItems: "center",
+        marginHorizontal: 20,
+        marginRight: 50
     },
     avatar: {
         width: 100,
         height: 100,
         borderRadius: 25,
     },
-    editarAvatar: {
+    desconectar: {
         justifyContent: "center",  
-        textDecorationLine: "underline", 
         marginTop: 10,
         fontWeight: "700",
         height: 25,
-        backgroundColor: "grey",
-        borderRadius: 10
+        borderRadius: 10,
+        backgroundColor: constants.CORP_GREY
     },
     descriptionInputView: {
-        borderWidth: 0,
-        height: 125,
+        height: "100%",
         width: 200,
         borderRadius: 20,
-        borderColor: constants.CORP_GREY,
+        flex: 1
     },
     descriptionInput: {
-        marginVertical: 10
+        marginVertical: 10,
+        height: "100%",
+        flex: 1
     },
 
     imagesContainer: {
         flex: 1,
         marginHorizontal: 20,
         marginBottom: 20,
-        flexDirection: "row"
+        flexDirection: "row",
     },
     image: {
         height: 125,
