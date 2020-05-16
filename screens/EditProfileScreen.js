@@ -11,7 +11,7 @@ import Fire from '../Fire';
 const firebase = require("firebase");
 require("@firebase/firestore");
 
-export default function PostScreen({navigation, route}) {
+export default function EditProfileScreen({navigation, route}) {
 
     navigation.setOptions({
         headerRight:() => (
@@ -26,10 +26,10 @@ export default function PostScreen({navigation, route}) {
         ),
     }, []);
 
-    const [name, setName] = useState(route.params.name1)
-    const [avatar, setAvatar] = useState(route.params.avatar1)
+    const [name, setName] = useState(route.params.name)
+    const [avatar, setAvatar] = useState(route.params.avatar)
     const [avatarChange, setAvatarChange] = useState(false)
-    const [description, setDescription] = useState(route.params.description1)
+    const [description, setDescription] = useState(route.params.description)
 
     /* 2.Escoger imagen de galería nativa y cargarla en la DB */
     const pickImage = async () => {
@@ -78,13 +78,14 @@ export default function PostScreen({navigation, route}) {
             });
     }
 
-    const auxiliarFunction = () => {
-        console.log(navigation)
+    const testingFlow = () => {
+        navigation.setParams({name: "xd"})
         console.log(route)
     }
 
     return (
         <View style={styles.container}>
+            {console.log("RENDERIZO EDITPROFILE")}
             <View style={styles.personalContainer}>
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.nameContainer}>{name}</Text>
@@ -120,6 +121,15 @@ export default function PostScreen({navigation, route}) {
                 </Ionicons>
                 <Text style={{fontWeight:"700",color:constants.CORP_PINK}}>Añade las fotos que más te gusten!</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity onPress={testingFlow}>
+                <Ionicons 
+                    name="md-add-circle" 
+                    size={80} 
+                    color={constants.CORP_PINK}>
+                </Ionicons>
+            </TouchableOpacity>
+            
             
         </View>
     );

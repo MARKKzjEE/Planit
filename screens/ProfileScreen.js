@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, TextInpu
 import { Ionicons } from '@expo/vector-icons';
 
 import * as constants from '../constants/constants';
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 
 const firebase = require("firebase");
 require("@firebase/firestore");
@@ -14,12 +13,13 @@ export default function ProfileScreen({navigation, route})  {
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [avatar, setAvatar] = useState("")
-
+    
     useEffect(() => {
-        //refreshScreen();
-        loadInfo();
-        loadImages();
-    },[]);
+        const unsubscribe = navigation.addListener('focus', () => {
+            //loadInfo();
+          });
+        return unsubscribe;
+    },[navigation]);
 
     const signOutUser = () => {
         setName("")
@@ -70,11 +70,12 @@ export default function ProfileScreen({navigation, route})  {
     
     return (
         <View style={styles.container}>
+            {console.log("RENDERIZO PROFILE")}
             <TouchableOpacity style={styles.icon} onPress={() => {
                         navigation.push('EditProfile', {
-                            name1: name,
-                            description1: description,
-                            avatar1: avatar
+                            name: name,
+                            description: description,
+                            avatar: avatar
                         });
             }}>
                 <Ionicons name="md-brush" size={30} color={constants.CORP_PINK}></Ionicons>
@@ -96,15 +97,16 @@ export default function ProfileScreen({navigation, route})  {
                     {avatar !== "" &&
                     <Image source={{ uri: avatar }} style={styles.avatar}></Image>
                     }
-                    <TouchableOpacity onPress={signOutUser} style={styles.desconectar}>
+                    <TouchableOpacity onPress={() => console.log(route)} style={styles.desconectar}>
                         <Text style={{padding: 10, color: "white"}}>Desconectar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-
             <View style={styles.imagesContainer}>
-                {images && images.map((item, i) => 
-                    <Image style={styles.image} key={i} source={{uri: item.image}}></Image>
+                {images ? (null) && console.log("DETECTO OBJETO VACIO")
+                : (images.map((item, i) => 
+                    <Image style={styles.image} key={i} source={{uri: item.image}}></Image> && console.log("DETECTO OBJETO ARRAY LLENO: ", item.image)
+                )
                 )}
             </View>
         </View>

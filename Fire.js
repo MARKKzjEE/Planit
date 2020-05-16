@@ -118,9 +118,6 @@ class Fire {
     /*3. Información Editada del Perfil cargada en Firebase Firestore*/
     updateAvatarAndInfo = async (pickAvatar, localUri, description) => {
 
-        console.log("DIME SI ENTRO");
-        console.log("Avatar: ",localUri);
-        console.log("Descripcion: ",description);
         if(description){
             let db = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
             db.set({description: description}, {merge:true});

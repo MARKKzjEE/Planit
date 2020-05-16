@@ -8,7 +8,7 @@ export default function ListPlans() {
 
     return (
         <View style={styles.container}>
-          <Text>EN CONSTRUCCIÓN!</Text>
+          <Text>EN CONSTRUCFKNERGFJKLÑMERNGÑRELCIÓN!</Text>
         </View>
       );
     }
