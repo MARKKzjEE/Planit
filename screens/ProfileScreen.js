@@ -16,57 +16,51 @@ export default function ProfileScreen({navigation, route})  {
     
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            //loadInfo();
+            loadInfo();
+            loadImages();
           });
         return unsubscribe;
     },[navigation]);
 
     const signOutUser = () => {
         setName("")
-        setDescription("")
-        setAvatar("")
-        setImages(null)
+        setDescription("");
+        setAvatar("");
+        setImages([]);
+        navigation.navigate('Loading');
         firebase.auth().signOut();
-    };
-
-    const refreshScreen = () => {
-        loadInfo()
-        loadImages()
+        
     };
     
-    /* 1. Cargar imágenes desde la DB */
     const loadImages = async () => {
-        setImages([]);
-        firebase.firestore()
+        let auxArr = []
+        await firebase.firestore()
             .collection('gallery').where('uid', '==', firebase.auth().currentUser.uid).get()
             .then((snapshot) => {
                 if(!snapshot.empty){
                     snapshot.forEach(doc => {
-                        setImages([...images, doc.data()])
+                        auxArr.push(doc.data())
                     });
+                    setImages(auxArr);
                 }
-                console.log("Query imagenes: ", images);
             })
             .catch((error) => {
-                console.log(error)
+                console.log(error);
             });
     };
 
     const loadInfo = async () => {
-        firebase.firestore()
+        await firebase.firestore()
         .collection("users").doc(firebase.auth().currentUser.uid).get()
         .then(doc => {
             setName(doc.data().name);
             setDescription(doc.data().description);
             setAvatar(doc.data().avatar);
-            console.log("UID :", firebase.auth().currentUser.uid);
-            console.log("Query doc: ", doc.data());
         })
         .catch((error) => {
             console.log(error)
         });
-    }
-    
+    };
     
     return (
         <View style={styles.container}>
@@ -97,18 +91,19 @@ export default function ProfileScreen({navigation, route})  {
                     {avatar !== "" &&
                     <Image source={{ uri: avatar }} style={styles.avatar}></Image>
                     }
-                    <TouchableOpacity onPress={() => console.log(route)} style={styles.desconectar}>
+                    <TouchableOpacity onPress={signOutUser} style={styles.desconectar}>
                         <Text style={{padding: 10, color: "white"}}>Desconectar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
+
             <View style={styles.imagesContainer}>
-                {images ? (null) && console.log("DETECTO OBJETO VACIO")
-                : (images.map((item, i) => 
-                    <Image style={styles.image} key={i} source={{uri: item.image}}></Image> && console.log("DETECTO OBJETO ARRAY LLENO: ", item.image)
-                )
+                {images && (images.map((item, i) => 
+                    <Image style={styles.image} key={i} source={{uri: item.image}}></Image>
+                    )
                 )}
             </View>
+
         </View>
     );
 }
@@ -150,7 +145,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         alignItems: "center",
         marginHorizontal: 20,
-        marginRight: 50
+        marginRight: 50,
     },
     avatar: {
         width: 100,
@@ -163,7 +158,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         height: 25,
         borderRadius: 10,
-        backgroundColor: constants.CORP_GREY
+        backgroundColor: constants.CORP_PINK
     },
     descriptionInputView: {
         height: "100%",

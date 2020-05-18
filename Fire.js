@@ -24,32 +24,8 @@ class Fire {
             console.log(error);
         }  
     }
-    /*1. Foto cargada en Firebase Storage*/
-    uploadPhotoAsync = async (uri, filename) => {
-
-        return new Promise(async (res, rej) => {
-            const response = await fetch(uri);
-            const file = await response.blob();
-            
-            let upload = firebase
-                .storage()
-                .ref(filename)
-                .put(file);
-            
-            upload.on(
-                "state_changed",
-                snapshot => {},
-                err =>  {
-                    rej(err);
-                },
-                async () => {
-                    const url = await upload.snapshot.ref.getDownloadURL();
-                    res(url); 
-                }
-            )
-        });
-    };
-
+    
+    /*TODO*/
     /*2. Imagen galeria usuario cargada en Firebase Firestore*/
     addImage = async (localUri) => {
         //subir imagen a BD
@@ -66,6 +42,7 @@ class Fire {
                 })
                 .then(ref => {
                     res(ref)
+                    console.log("WHAT?", res, ref);
                 })
                 .catch(error => {
                     rej(error)
@@ -73,7 +50,9 @@ class Fire {
         });
     };
 
-    /*2.1 Imagen galeria usuario cargada en Firebase Firestore*/
+    /*FINISHED*/
+
+    /*Imagen galeria usuario cargada en Firebase Firestore*/
     createUser = async (regUser) => {
 
         try {
@@ -115,11 +94,36 @@ class Fire {
         }
     };
 
-    /*3. Información Editada del Perfil cargada en Firebase Firestore*/
-    updateAvatarAndInfo = async (pickAvatar, localUri, description) => {
+    /*Foto cargada en Firebase Storage*/
+    uploadPhotoAsync = async (uri, filename) => {
 
+        return new Promise(async (res, rej) => {
+            const response = await fetch(uri);
+            const file = await response.blob();
+            
+            let upload = firebase
+                .storage()
+                .ref(filename)
+                .put(file);
+            
+            upload.on(
+                "state_changed",
+                snapshot => {},
+                err =>  {
+                    rej(err);
+                },
+                async () => {
+                    const url = await upload.snapshot.ref.getDownloadURL();
+                    res(url); 
+                }
+            )
+        });
+    };
+
+    /*Información Editada del Perfil cargada en Firebase Firestore*/
+    updateAvatarAndInfo = async (pickAvatar, localUri, description) => {
+        let db = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
         if(description){
-            let db = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
             db.set({description: description}, {merge:true});
         }
         if(pickAvatar){

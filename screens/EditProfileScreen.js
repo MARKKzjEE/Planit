@@ -78,11 +78,6 @@ export default function EditProfileScreen({navigation, route}) {
             });
     }
 
-    const testingFlow = () => {
-        navigation.setParams({name: "xd"})
-        console.log(route)
-    }
-
     return (
         <View style={styles.container}>
             {console.log("RENDERIZO EDITPROFILE")}
@@ -121,15 +116,6 @@ export default function EditProfileScreen({navigation, route}) {
                 </Ionicons>
                 <Text style={{fontWeight:"700",color:constants.CORP_PINK}}>Añade las fotos que más te gusten!</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity onPress={testingFlow}>
-                <Ionicons 
-                    name="md-add-circle" 
-                    size={80} 
-                    color={constants.CORP_PINK}>
-                </Ionicons>
-            </TouchableOpacity>
-            
             
         </View>
     );
