@@ -57,7 +57,7 @@ export default function RegisterScreen({navigation}) {
         <TextInput
             style={styles.inputText}
             placeholder="Nombre Completo..."
-            autoCapitalize="none"
+            autoCapitalize="words"
             placeholderTextColor= "grey"
             onChangeText={name => setRegUser({...regUser, name})}
             value={regUser.name}>
