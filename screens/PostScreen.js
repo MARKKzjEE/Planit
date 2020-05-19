@@ -1,27 +1,49 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TextInput, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
 import Constants from 'expo-constants';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as Location from 'expo-location';
+import MapView from 'react-native-maps'
 
 import * as constants from '../constants/constants'
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { getRegionForCoordinates } from './HomeScreen';
 
-export default function PostScreen() {
+export default function PostScreen({navigation}) {
 
     const [plan, setPlan] = useState({
       name: "",
       description: "",
-      private : false,
+      isPrivate : false,
       date: new Date(),
       location: {
-        latitude: null,
-        longitude: null
+      },
+      planLocation: {
       }
     });
 
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
+    
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('focus', () => {
+          try {
+            (async () => {
+              let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.High});
+              const points = [{latitude:location.coords.latitude, longitude:location.coords.longitude}];
+              setPlan({...plan, location: getRegionForCoordinates(points)});
+            })();
+          }
+          catch(error){
+            let status = Location.getProviderStatusAsync()
+            if(!status.locationServicesEnabled) {
+              Alert.alert('Activa el servicio de localización')
+            }
+          }
+        });
+        return unsubscribe;
+    },[navigation]);
 
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate || plan.date;
@@ -43,17 +65,41 @@ export default function PostScreen() {
       setShow(true);
       showMode('time');
     };
+
+    const handleGroupType = () => {
+      setPlan(previousState => ({...plan, isPrivate: !previousState.isPrivate}));
+    }
+    
     /*
     const auxiliariano = () => {
-      console.log(plan);
+      console.log(navigation);
     }
     <TouchableOpacity onPress={auxiliariano}>
-          <Text>HOHOHOHO</Text>
+      <Text>HOHOHOHO</Text>
     </TouchableOpacity>
     */
 
+    const handleCreation = () =>{
+      navigation.navigate('Home');
+    }
+    
     return (
+      
       <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity>
+
+          </TouchableOpacity>
+          <Text style={styles.title}>Crea tu Plan!</Text>
+          <TouchableOpacity style={{marginRight: 20}}>
+                <Ionicons 
+                    name="md-checkbox" 
+                    size={30} 
+                    color={constants.CORP_PINK}
+                    onPress={handleCreation}>
+                </Ionicons>
+          </TouchableOpacity>
+        </View>
         <ScrollView style={styles.scrollView}>
           
           <View style={styles.containerInfo}>
@@ -108,6 +154,29 @@ export default function PostScreen() {
               </TextInput>
             </View>
           </View>
+
+          <View style={styles.containerSwitch}>
+            <Text style={styles.presetTextInputs}>Haz tu plan privado: </Text>
+            <Switch
+                trackColor={{true:constants.CORP_PINK, false:"grey"}}
+                thumbColor={plan.isPrivate ? constants.CORP_PINK : constants.CORP_GREY}
+                onValueChange={handleGroupType}
+                value={plan.isPrivate}
+                style={{marginLeft: 20}}>
+            </Switch>
+          </View>
+
+          <View style={{flex: 2, borderTopWidth: 1, borderTopColor: constants.CORP_GREY,}}>
+            <Text style={styles.presetTextInputs}>Selecciona una ubicación:</Text>
+            {plan.location.latitude != undefined &&
+              <MapView
+                showsUserLocation={true}
+                initialRegion={plan.location}
+                style={styles.mapStyle}>
+              </MapView>
+            }
+            
+          </View>
           
         </ScrollView>
       </View>
@@ -119,6 +188,17 @@ export default function PostScreen() {
           flex: 1,
           marginTop: 20,
           marginHorizontal: 20
+        },
+        header: {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          height: 50,
+          marginTop: 20
+        },
+        title: {
+          color: constants.CORP_PINK,
+          fontSize: 25,
+          fontWeight: "bold"
         },
         scrollView: {
           flex: 1
@@ -155,6 +235,7 @@ export default function PostScreen() {
           marginVertical: 5
         },
         containerDescription: {
+          flex: 2
         },
         descriptionInputView: {
           height: 100,
@@ -163,5 +244,13 @@ export default function PostScreen() {
         },
         descriptionInput: {
           marginHorizontal: 10
+        },
+        containerSwitch: {
+          flexDirection: "row",
+          flex: 2
+        },
+        mapStyle: {
+          width:"100%",
+          height: 350
         },
       });

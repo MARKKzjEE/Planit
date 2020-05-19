@@ -54,7 +54,7 @@ const AppContainerScreens = (navigation, route) => {
         component={MainTabScreens}
         options={({route}) => ({
           title:getHeaderTitle(route),
-          headerShown: shouldHeaderBeShown(route),
+          headerShown: shouldHeaderBeShown(route)
         })}/>
     </AppContainer.Navigator>
     );
@@ -175,6 +175,8 @@ function shouldHeaderBeShown(route) {
     case "Home":
       return false;
     case "ListPlans":
+      return false;
+    case "Post":
       return false;
     case "Profile":
       return false;

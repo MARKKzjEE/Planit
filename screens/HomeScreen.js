@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, SafeAreaView, Alert } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, Alert } from 'react-native';
 import MapView from 'react-native-maps'
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
@@ -46,7 +46,6 @@ export default function HomeScreen(navigation) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isReady, setReady] = useState(false);
-  const [isReady2, setReady2] = useState(false);
   const [region, setRegion] = useState(null);
 
   useEffect(() => {
@@ -68,11 +67,11 @@ export default function HomeScreen(navigation) {
       }
     },[]);
 
-    if(location && !isReady){
-      setReady(true)
-      const points = [{ latitude: location.coords.latitude, longitude: location.coords.longitude}]
-      setRegion(getRegionForCoordinates(points));
-    }
+  if(location && !isReady){
+    setReady(true)
+    const points = [{ latitude: location.coords.latitude, longitude: location.coords.longitude}]
+    setRegion(getRegionForCoordinates(points));
+  }
 
   const auxiliar = () => {
     console.log("EXTRA :",region);
