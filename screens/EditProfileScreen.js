@@ -8,8 +8,6 @@ import UserPermissions from '../utilities/UserPermissions'
 import * as ImagePicker from 'expo-image-picker';
 
 import Fire from '../Fire';
-const firebase = require("firebase");
-require("@firebase/firestore");
 
 export default function EditProfileScreen({navigation, route}) {
 

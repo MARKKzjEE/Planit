@@ -2,6 +2,9 @@ import firebase from 'firebase';
 import '@firebase/firestore';
 import { Alert } from 'react-native';
 
+/*const firebase = require("firebase");
+require("@firebase/firestore");*/
+
 var DB_CONFIG = {
     apiKey: "AIzaSyBHk2r2_fEb8QGo46aDRpvJKZB2cgIuC0E",
     authDomain: "planit-3e8a0.firebaseapp.com",
@@ -25,7 +28,6 @@ class Fire {
         }  
     }
     
-    /*TODO*/
     /*2. Imagen galeria usuario cargada en Firebase Firestore*/
     addImage = async (localUri) => {
         //subir imagen a BD
@@ -42,15 +44,12 @@ class Fire {
                 })
                 .then(ref => {
                     res(ref)
-                    console.log("WHAT?", res, ref);
                 })
                 .catch(error => {
                     rej(error)
                 });
         });
     };
-
-    /*FINISHED*/
 
     /*Imagen galeria usuario cargada en Firebase Firestore*/
     createUser = async (regUser) => {
@@ -136,6 +135,27 @@ class Fire {
                 });
         }
     };
+
+    createPlan = async (plan) => {
+        return new Promise((res, rej) => {
+            firebase.firestore()
+                .collection("plans")
+                .add({
+                    plan,
+                    uid: firebase.auth().currentUser.uid,
+                    createdAt: new Date()
+                })
+                .then(ref => {
+                    res(ref)
+                    console.log("QUERY DONE: ", res(ref))
+                })
+                .catch(error => {
+                    rej(error)
+                });
+        });
+    };
+
+
 }
 
 Fire.shared = new Fire()

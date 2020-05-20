@@ -5,10 +5,13 @@ import Constants from 'expo-constants';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import MapView from 'react-native-maps'
+import { Marker } from 'react-native-maps'
 
 import * as constants from '../constants/constants'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getRegionForCoordinates } from './HomeScreen';
+
+import Fire from '../Fire';
 
 export default function PostScreen({navigation}) {
 
@@ -70,17 +73,24 @@ export default function PostScreen({navigation}) {
       setPlan(previousState => ({...plan, isPrivate: !previousState.isPrivate}));
     }
     
-    /*
     const auxiliariano = () => {
-      console.log(navigation);
+      console.log(plan);
     }
-    <TouchableOpacity onPress={auxiliariano}>
-      <Text>HOHOHOHO</Text>
-    </TouchableOpacity>
-    */
 
-    const handleCreation = () =>{
-      navigation.navigate('Home');
+    const handleCreation = async () =>{
+      await Fire.shared
+            .createPlan(plan)
+            .then( () => {
+                console.log("Plan creado con éxito!");
+                setPlan({
+                  ...plan,
+                  name:"",description:"",planLocation:{}
+                })
+                navigation.navigate('Home');
+            })
+            .catch((error) => {
+                console.log(error)
+            });
     }
     
     return (
@@ -89,12 +99,11 @@ export default function PostScreen({navigation}) {
         <View style={styles.header}>
           <TouchableOpacity/>
           <Text style={styles.title}>Crea tu Plan!</Text>
-          <TouchableOpacity style={{marginRight: 20}}>
+          <TouchableOpacity onPress={handleCreation} style={{marginRight: 20}}>
                 <Ionicons 
                     name="md-checkbox" 
                     size={30} 
-                    color={constants.CORP_PINK}
-                    onPress={handleCreation}>
+                    color={constants.CORP_PINK}>
                 </Ionicons>
           </TouchableOpacity>
         </View>
@@ -170,7 +179,14 @@ export default function PostScreen({navigation}) {
               <MapView
                 showsUserLocation={true}
                 initialRegion={plan.location}
+                onPress={(e) => setPlan({...plan,  planLocation: e.nativeEvent.coordinate })}
                 style={styles.mapStyle}>
+              {plan.planLocation.latitude != undefined &&
+              <Marker
+                coordinate={plan.planLocation}
+                title={plan.name}
+              />
+              }
               </MapView>
             }
           </View>

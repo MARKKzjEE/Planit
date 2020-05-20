@@ -48,6 +48,7 @@ export default function HomeScreen(navigation) {
   const [isReady, setReady] = useState(false);
   const [region, setRegion] = useState(null);
 
+
   useEffect(() => {
       try {
           (async () => {
@@ -102,6 +103,7 @@ export default function HomeScreen(navigation) {
         <MapView
           showsUserLocation={true}
           initialRegion={region}
+          followsUserLocation
           style={styles.mapStyle}>
         </MapView>
       }

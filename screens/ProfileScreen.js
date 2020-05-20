@@ -75,7 +75,7 @@ export default function ProfileScreen({navigation, route})  {
     
     return (
         <View style={styles.container}>
-            {console.log(images)}
+            {console.log("RENDERIZO PROFILE")}
             <TouchableOpacity style={styles.icon} onPress={() => {
                         navigation.push('EditProfile', {
                             name: name,
