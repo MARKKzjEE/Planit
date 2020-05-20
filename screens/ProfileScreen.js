@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, TextInput, TouchableOpacityBase, Alert } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, Alert, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import * as constants from '../constants/constants';
@@ -7,12 +7,16 @@ import * as constants from '../constants/constants';
 const firebase = require("firebase");
 require("@firebase/firestore");
 
+const {width} = Dimensions.get("window");
+const height = width * 0.65;
+
 export default function ProfileScreen({navigation, route})  {
 
     const [images, setImages] = useState([])
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [avatar, setAvatar] = useState("")
+    const [active, setActive] = useState(0)
     
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -61,10 +65,17 @@ export default function ProfileScreen({navigation, route})  {
             console.log(error)
         });
     };
+
+    const changeActivePage = ({nativeEvent}) => {
+        const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width);
+        if(slide !== active){
+            setActive(slide);
+        }
+    }
     
     return (
         <View style={styles.container}>
-            {console.log("RENDERIZO PROFILE")}
+            {console.log(images)}
             <TouchableOpacity style={styles.icon} onPress={() => {
                         navigation.push('EditProfile', {
                             name: name,
@@ -96,14 +107,27 @@ export default function ProfileScreen({navigation, route})  {
                     </TouchableOpacity>
                 </View>
             </View>
-
+            
+            <Text style={{fontWeight:"bold", marginLeft:30}}>Mis fotos:</Text>
             <View style={styles.imagesContainer}>
-                {images && (images.map((item, i) => 
-                    <Image style={styles.image} key={i} source={{uri: item.image}}></Image>
-                    )
-                )}
+                <ScrollView 
+                    pagingEnabled 
+                    horizontal 
+                    onScroll={changeActivePage}
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.swiper}>
+                    {images && (images.map((item, i) => 
+                        <Image style={styles.image} key={i} source={{uri: item.image}}></Image>
+                        )
+                    )}
+                </ScrollView>
+                <View style={styles.pagination}>
+                    {images && (images.map((item, i) => 
+                        <Text key={i} style={i==active ? styles.activePage : styles.nextPage}>●</Text>
+                        )
+                    )}
+                </View>
             </View>
-
         </View>
     );
 }
@@ -111,7 +135,7 @@ export default function ProfileScreen({navigation, route})  {
 const styles = StyleSheet.create({
   
     container: {
-      flex: 1
+      flex: 1,
     },
     icon: {
         position:"absolute",
@@ -128,7 +152,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around",
         maxHeight: 200,
-        marginTop: 80
+        marginTop: 80,
     },
     descriptionContainer: {
         flex: 1,
@@ -171,21 +195,35 @@ const styles = StyleSheet.create({
         height: "100%",
         flex: 1
     },
-
     imagesContainer: {
-        flex: 1,
-        marginHorizontal: 20,
-        marginBottom: 20,
-        flexDirection: "row",
+        marginVertical: 20,
+        width,
+        height,
+    },
+    swiper: {
+        width,
+        height,
     },
     image: {
-        height: 125,
-        width: 125,
-        marginRight: 10
+        height,
+        width,
+        resizeMode: "cover"
     },
-    mdImages: {
-        alignItems: "flex-end",
-        marginHorizontal: 20,
-        marginBottom: 20,
+    pagination: {
+        flexDirection: "row",
+        position:"absolute",
+        bottom: 0,
+        alignSelf: "center"
+    },
+    nextPage: {
+        color: "#888",
+        margin: 3,
+        fontSize: 25
+    },
+    activePage: {
+        color: "white",
+        fontSize: 30,
+        margin: 3,
+        fontSize: 25
     }
 })

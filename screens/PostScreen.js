@@ -87,9 +87,7 @@ export default function PostScreen({navigation}) {
       
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity>
-
-          </TouchableOpacity>
+          <TouchableOpacity/>
           <Text style={styles.title}>Crea tu Plan!</Text>
           <TouchableOpacity style={{marginRight: 20}}>
                 <Ionicons 
@@ -108,7 +106,7 @@ export default function PostScreen({navigation}) {
               <TextInput style={styles.nameInput}
               autoCapitalize="sentences"
               maxLength={20}
-              placeholder={"Escribe el nombre aquí..."}
+              placeholder={"Dale un nombre a tu plan..."}
               placeholderTextColor={"grey"}
               onChangeText={name => setPlan({...plan, name})}
               value={plan.name}>
@@ -166,7 +164,7 @@ export default function PostScreen({navigation}) {
             </Switch>
           </View>
 
-          <View style={{flex: 2, borderTopWidth: 1, borderTopColor: constants.CORP_GREY,}}>
+          <View style={{flex: 2, borderTopWidth: 1, borderTopColor: constants.CORP_GREY,marginBottom:20}}>
             <Text style={styles.presetTextInputs}>Selecciona una ubicación:</Text>
             {plan.location.latitude != undefined &&
               <MapView
@@ -175,7 +173,6 @@ export default function PostScreen({navigation}) {
                 style={styles.mapStyle}>
               </MapView>
             }
-            
           </View>
           
         </ScrollView>

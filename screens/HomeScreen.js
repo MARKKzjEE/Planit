@@ -72,11 +72,15 @@ export default function HomeScreen(navigation) {
     const points = [{ latitude: location.coords.latitude, longitude: location.coords.longitude}]
     setRegion(getRegionForCoordinates(points));
   }
-
+/*
   const auxiliar = () => {
-    console.log("EXTRA :",region);
+    <View style={styles.containerFooter}>
+        <TouchableOpacity onPress={auxiliar}>
+          <Ionicons size={30} name="md-checkbox"></Ionicons>
+        </TouchableOpacity>
+    </View>
   }
-
+*/
   let text = 'Cargando Ubicación..';
   if (errorMsg) {
     text = errorMsg;
@@ -86,48 +90,50 @@ export default function HomeScreen(navigation) {
   
   return (
     <View style={{flex: 1}}>
-    <View style={styles.containerHeader}>
-      <Text style={styles.paragraph}>{text}</Text>
-    </View>
-    <View style={styles.container}>
-      {isReady &&
-      <MapView
-        showsUserLocation={true}
-        initialRegion={region}
-        style={styles.mapStyle}>
-      </MapView>
-    }
-    </View>
-    <View style={styles.containerFooter}>
-      <TouchableOpacity onPress={auxiliar}>
-        <Ionicons size={30} name="md-checkbox"></Ionicons>
-      </TouchableOpacity>
-    </View>
-  </View>
+      <View style={styles.containerHeader}>
+            <TouchableOpacity>
+            </TouchableOpacity>
+            <Text style={styles.title}>Únete a un plan</Text>
+            <TouchableOpacity>
+            </TouchableOpacity>
+      </View>
+      <View style={styles.container}>
+        {isReady &&
+        <MapView
+          showsUserLocation={true}
+          initialRegion={region}
+          style={styles.mapStyle}>
+        </MapView>
+      }
+      </View>
+      
+   </View>
   );
 }
 
 const styles = StyleSheet.create({
-  containerHeader: {
-    flex: 1,
-    maxHeight: 60,
-  },
+  
   container: {
     flex: 1
   },
-
+  containerHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    maxHeight:50,
+    marginTop: 30,
+    flex: 1,
+  },
+  title: {
+    color: constants.CORP_PINK,
+    fontSize: 25,
+    fontWeight: "bold"
+  },
   mapStyle: {
     height: "100%",
     width: "100%"
   },
-
   containerFooter: {
     flex: 1,
     maxHeight: 60,
   },
 });
-
-/*
-width: Dimensions.get('window').width,
-height: Dimensions.get('window').height,
-*/
