@@ -147,7 +147,6 @@ class Fire {
                 })
                 .then(ref => {
                     res(ref)
-                    console.log("QUERY DONE: ", res(ref))
                 })
                 .catch(error => {
                     rej(error)
