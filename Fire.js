@@ -68,11 +68,13 @@ class Fire {
             if(regUser.avatar){
                 await this.uploadPhotoAsync(regUser.avatar, `avatars/${firebase.auth().currentUser.uid}/${Date.now()}`)
                             .then((remoteUri) => {
-                                db.set({ avatar: remoteUri}, {merge: true})
+                                db.set({ avatar: remoteUri}, {merge: true});
+                                firebase.auth().currentUser.updateProfile({displayName: regUser.name, photoURL: remoteUri});
                             })
                             .catch((error) => {
                                 console.log(error)
                             });
+                
             }
             else {
                 firebase.storage()
@@ -80,7 +82,8 @@ class Fire {
                     .child('defaultAvatar.png')
                     .getDownloadURL()
                     .then((remoteUri) => {
-                        db.set({ avatar: remoteUri}, {merge: true})
+                        db.set({ avatar: remoteUri}, {merge: true});
+                        firebase.auth().currentUser.updateProfile({displayName: regUser.name, photoURL: remoteUri});
                     })
                     .catch((error) => {
                         console.log(error)
@@ -129,6 +132,7 @@ class Fire {
             await this.uploadPhotoAsync(localUri, `avatars/${firebase.auth().currentUser.uid}/${Date.now()}`)
                 .then((remoteUri) => {
                     db.update({ avatar: remoteUri })
+                    firebase.auth().currentUser.updateProfile({photoURL: remoteUri});
                 })
                 .catch((error) => {
                     console.log(error)

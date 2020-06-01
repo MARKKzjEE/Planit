@@ -16,7 +16,6 @@ export default function RegisterScreen({navigation}) {
   const handlePickAvatar = async () => {
 
     UserPermissions.getPhotoPermission();
-    console.log(firebase.auth().currentUser)
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -29,10 +28,7 @@ export default function RegisterScreen({navigation}) {
 
   const handleSignUp = () => {
     Fire.shared.createUser(regUser);
-    //console.log(regUser);
   }
-
-  LayoutAnimation.easeInEaseOut();
 
     return (
       <View style={styles.container}>

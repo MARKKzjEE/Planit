@@ -13,6 +13,8 @@ import { getRegionForCoordinates } from './HomeScreen';
 
 import Fire from '../Fire';
 
+
+
 export default function PostScreen({navigation}) {
 
     const [plan, setPlan] = useState({
@@ -96,6 +98,7 @@ export default function PostScreen({navigation}) {
     return (
       
       <View style={styles.container}>
+        {console.log(plan)}
         <View style={styles.header}>
           <TouchableOpacity/>
           <Text style={styles.title}>Crea tu Plan!</Text>
@@ -144,6 +147,28 @@ export default function PostScreen({navigation}) {
                   onChange={onChange}
                   minimumDate={new Date()}/>
                 )}
+          </View>
+
+          <View style={{marginTop: 10, alignItems: "center"}}>
+            <Text style={styles.textDateTime}>
+                {
+                  ""
+                  + ("0" + plan.date.getDate()).slice(-2) 
+                  + "/" 
+                  + ("0"  + (plan.date.getMonth()+1)).slice(-2) 
+                  + "/" 
+                  + plan.date.getFullYear()
+                  + " "
+                }
+                a las
+                {
+                  " "
+                  + plan.date.getHours()
+                  + ":"
+                  + plan.date.getMinutes()
+                  + "h!"
+                }
+            </Text>
           </View>
 
           <View style={styles.containerDescription}>
@@ -266,4 +291,8 @@ export default function PostScreen({navigation}) {
           width:"100%",
           height: 350
         },
+        textDateTime: {
+          color: constants.CORP_PINK, 
+          fontWeight: "bold",
+        }
       });

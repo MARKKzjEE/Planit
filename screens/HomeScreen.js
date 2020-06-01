@@ -116,7 +116,6 @@ export default function HomeScreen({navigation}) {
             </TouchableOpacity>
             <Text style={styles.title}>Únete a un plan</Text>
             <TouchableOpacity onPress={auxiliar}>
-              <Ionicons size={30} name="md-checkbox"></Ionicons>
             </TouchableOpacity>
       </View>
       <View style={styles.container}>

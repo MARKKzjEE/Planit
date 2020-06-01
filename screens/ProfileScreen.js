@@ -60,6 +60,7 @@ export default function ProfileScreen({navigation, route})  {
             setName(doc.data().name);
             setDescription(doc.data().description);
             setAvatar(doc.data().avatar);
+            console.log(doc.data().avatar);
         })
         .catch((error) => {
             console.log(error)
