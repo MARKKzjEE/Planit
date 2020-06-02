@@ -93,7 +93,7 @@ export default function PostScreen({navigation}) {
             .catch((error) => {
                 console.log(error)
             });
-    }
+    };
     
     return (
       

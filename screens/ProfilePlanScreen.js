@@ -10,11 +10,13 @@ require("@firebase/firestore");
 
 import Fire from '../Fire';
 
-YellowBox.ignoreWarnings([
-    'Non-serializable values were found in the navigation state',
-]);
+
 
 export default function ProfilePlanScreen({navigation, route})  {
+
+    YellowBox.ignoreWarnings([
+        'Non-serializable values were found in the navigation state',
+    ]);
 
     navigation.setOptions({
         headerRight:() => (
@@ -23,7 +25,7 @@ export default function ProfilePlanScreen({navigation, route})  {
                     name="ios-trash" 
                     size={30} 
                     color={constants.CORP_PINK}
-                    onPress={handleDelete}
+                    onPress={alertDelete}
                     >
                 </Ionicons>
             </TouchableOpacity>
@@ -33,21 +35,31 @@ export default function ProfilePlanScreen({navigation, route})  {
     const [plan, setPlan] = useState(route.params.plan);
     const [users, setUsers] = useState(["id1","id2","id3","id4","id5","id6"]);
 
-    const handleDelete = () => {
-
+    const alertDelete = () => {
         Alert.alert(
             'Aviso',
             '¿Estás seguro que deseas eliminar el plan?',
             [
               {
                 text: 'No',
-                onPress: () => console.log('Cancel Pressed'),
                 style: 'cancel',
               },
-              { text: 'Sí', onPress: () => console.log('OK Pressed') },
+              { text: 'Sí', onPress: handleDelete },
             ],
             { cancelable: false }
           );
+    };
+
+    const handleDelete = async () => {
+        await Fire.shared
+            .deletePlan(plan.id)
+            .then( () => {
+                console.log("Plan eliminado")
+                navigation.goBack()
+            })
+            .catch((error) => {
+                console.log(error)
+            });
     };
 
     const renderUsers = item => {
@@ -61,7 +73,7 @@ export default function ProfilePlanScreen({navigation, route})  {
     return (
         
         <View style={styles.container}>
-
+            {console.log(plan.id)}
             <View style={styles.userCreation}>
                 <View>
                     <Text style={styles.headersWhiteBig}>{plan.plan.name}</Text>
@@ -101,7 +113,7 @@ export default function ProfilePlanScreen({navigation, route})  {
                             + new Date(plan.plan.date.toDate()).getHours()
                             + ":"
                             + new Date(plan.plan.date.toDate()).getMinutes()
-                            + "h!"
+                            + "h."
                         }
                         </Text>
                     </View>

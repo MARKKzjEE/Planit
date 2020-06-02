@@ -158,6 +158,20 @@ class Fire {
         });
     };
 
+    deletePlan = async (id) => {
+        return new Promise((res, rej) => {
+            firebase.firestore()
+                .collection("plans").doc(id)
+                .delete()
+                .then(ref => {
+                    res(ref)
+                })
+                .catch(error => {
+                    rej(error)
+                });
+        });
+    }
+
 
 }
 

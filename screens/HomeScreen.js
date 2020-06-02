@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, View, TouchableOpacity, LayoutAnimation, Alert } from 'react-native';
-import MapView from 'react-native-maps'
+import MapView, { Callout } from 'react-native-maps'
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { Marker } from 'react-native-maps'
@@ -82,12 +82,14 @@ export default function HomeScreen({navigation}) {
 
   const loadPlans = async () => {
     let auxPlans = [];
+    let auxMerge = {};
     await firebase.firestore()
         .collection('plans').get()
         .then((snapshot) => {
             if(!snapshot.empty){
                 snapshot.forEach(doc => {
-                    auxPlans.push(doc.data())
+                  auxMerge = {...doc.data(), id: doc.id};
+                  auxPlans.push(auxMerge);
                 });
                 setPlans(auxPlans);
                 setReady1(true);
@@ -98,24 +100,20 @@ export default function HomeScreen({navigation}) {
         });
   };
 
-  const auxiliar = () => {
-    console.log(navigation);
-  }
-
   let text = 'Cargando Ubicación..';
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
     text = JSON.stringify(location);
   }
-  
+
   return (
     <View style={{flex: 1}}>
       <View style={styles.containerHeader}>
             <TouchableOpacity>
             </TouchableOpacity>
             <Text style={styles.title}>Únete a un plan</Text>
-            <TouchableOpacity onPress={auxiliar}>
+            <TouchableOpacity>
             </TouchableOpacity>
       </View>
       <View style={styles.container}>
@@ -128,10 +126,35 @@ export default function HomeScreen({navigation}) {
           {plans.map((item, i) =>
             <Marker
               coordinate={item.plan.planLocation}
-              title={item.plan.name}
-              description={item.plan.description}
-              key={i}
-            />
+              key={i}>
+              <Callout>
+                <View>
+                  <View style={{flexDirection:"row", justifyContent:"center", marginBottom: 15}}>
+                    <Text style={{fontWeight:"bold"}}>{item.plan.name}</Text>
+                    {item.plan.isPrivate ? (
+                      <Ionicons name="ios-lock" size={25} color={constants.CORP_PINK} style={{position:"absolute", top:0,right:0,left:0,bottom:0}}></Ionicons>
+                    ) : (
+                      <Ionicons name="ios-unlock" size={25} color={constants.CORP_PINK} style={{position:"absolute", top:0,right:0,left:0,bottom:0}}></Ionicons>
+                    )}
+                  </View>
+                  <Text style={{width:200, marginBottom:15, color:"grey", alignContent:"center"}}>{item.plan.description}</Text>
+                  <View style={{flexDirection:"row", justifyContent:"space-around", marginBottom:15}}>
+                    <TouchableOpacity style={{width:90, height:20, backgroundColor:"grey", borderRadius:3, justifyContent:"center", alignItems:"center"}}>
+                      <Text style={{color:"white",fontWeight:"bold"}}>Saber más</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{width:90, height:20, backgroundColor:constants.CORP_PINK, borderRadius:3, justifyContent:"center", alignItems:"center"}}>
+                      {item.plan.isPrivate ? (
+                        <Text style={{color:"white",fontWeight:"bold"}}>Solicitar</Text>
+                      ) : (
+                        <Text style={{color:"white",fontWeight:"bold"}}>Únete</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+              
+                </View>
+                
+              </Callout>
+            </Marker>
           )}
         </MapView>
         }

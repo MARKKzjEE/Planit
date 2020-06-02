@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'
+import { YellowBox } from 'react-native';
 
 import * as constants from '../constants/constants'
 
@@ -8,6 +9,10 @@ import firebase from 'firebase'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function ListPlansScreen({navigation, route}) {
+
+  YellowBox.ignoreWarnings([
+    'Non-serializable values were found in the navigation state',
+  ]);
 
   const [plans, setPlans] = useState([]);
   
@@ -51,6 +56,7 @@ export default function ListPlansScreen({navigation, route}) {
     const renderPlans = item => {
       return(
         <View style={styles.feedItem}>
+
             <View style={styles.firstLine}>
               <Image source={{uri: firebase.auth().currentUser.photoURL}} style={styles.avatar}></Image>
               <Text style={{color: constants.CORP_PINK, fontWeight: "bold", fontSize: 20}}>{item.plan.name}</Text>
@@ -98,14 +104,23 @@ export default function ListPlansScreen({navigation, route}) {
 
     return (
         <View style={styles.container}>
-          {console.log(plans)}
-          <FlatList
-            style={styles.feed}
-            data={plans}
-            renderItem={ ({item}) => renderPlans(item) } 
-            keyExtractor={item => item.id}
-            showsVerticalScrollIndicator= {false}>
-          </FlatList>
+          <View>
+            
+          </View>
+          { plans && plans.length > 0 ? (
+            <FlatList
+              style={styles.feed}
+              data={plans}
+              renderItem={ ({item}) => renderPlans(item) } 
+              keyExtractor={item => item.id}
+              showsVerticalScrollIndicator= {false}>
+            </FlatList>
+          ) : (
+            <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+              <Text style={{fontSize:20,fontWeight:"bold", color:constants.CORP_PINK}}>No tienes ningún plan creado!</Text>
+            </View>
+          )}
+          
         </View>
       );
     }
