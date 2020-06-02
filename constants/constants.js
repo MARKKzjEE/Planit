@@ -1,5 +1,6 @@
 /*COLORS*/
 export const CORP_PINK = "rgb(250, 82, 108)";
+export const CORP_LIGHT_PINK = "rgb(255, 135, 150)";
 export const CORP_GREY = "#D8D9DB";
 
 /*DATABASE*/

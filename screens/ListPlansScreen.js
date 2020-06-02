@@ -7,7 +7,7 @@ import * as constants from '../constants/constants'
 import firebase from 'firebase'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function ListPlans({navigation}) {
+export default function ListPlansScreen({navigation, route}) {
 
   const [plans, setPlans] = useState([]);
   
@@ -62,7 +62,11 @@ export default function ListPlans({navigation}) {
             </View>
             <View style={styles.secondLine}>
                 <Text style={{width: "80%"}}>{item.plan.description}</Text>
-                <TouchableOpacity style={styles.editButton}>
+                <TouchableOpacity style={styles.editButton} onPress={() => {
+                        navigation.push('ProfilePlanScreen', {
+                            plan: item
+                        });
+                }}>
                   <Ionicons name="ios-search" size={20} color="white"></Ionicons>
                 </TouchableOpacity>
             </View>

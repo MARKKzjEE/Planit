@@ -10,7 +10,8 @@ import LoadingScreen from  './screens/LoadingScreen'
 import RegisterScreen from  './screens/RegisterScreen'
 import HomeScreen from  './screens/HomeScreen'
 import LoginScreen from  './screens/LoginScreen'
-import ListPlans from './screens/ListPlans'
+import ListPlansScreen from './screens/ListPlansScreen'
+import ProfilePlanScreen from './screens/ProfilePlanScreen'
 import NotificationsScreen from './screens/NotificationScreen'
 import PostScreen from './screens/PostScreen'
 import ProfileScreen from './screens/ProfileScreen'
@@ -72,7 +73,7 @@ const MainTabScreens = ({navigation, route}) => {
           if(route.name == 'Home'){
             iconName = 'ios-home'
           } 
-          else if(route.name == 'ListPlans'){
+          else if(route.name == 'ListPlansScreen'){
             iconName = 'md-list-box'
           }
           else if(route.name == 'Post'){
@@ -95,7 +96,7 @@ const MainTabScreens = ({navigation, route}) => {
       }}>
 
       <MainTab.Screen name="Home" component={HomeScreen}/>
-      <MainTab.Screen name="ListPlans" component={ListPlans}/>
+      <MainTab.Screen name="ListPlansScreen" component={MyPlanStackScreens}/>
       <MainTab.Screen name="Post" component={PostScreen}/>
       <MainTab.Screen name="Profile" component={ProfileStackScreens}/>
       <MainTab.Screen name="Settings" component={SettingsStackScreens}/>
@@ -147,6 +148,26 @@ const SettingsStackScreens = ({navigation, route}) => {
     </SettingsStack.Navigator>
   )
 };
+
+const MyPlanStack = createStackNavigator();
+const MyPlanStackScreens = ({navigation, route}) => {
+  
+  if(route.state) {
+    navigation.setOptions({
+      tabBarVisible: route.state.index > 0  ? false : true
+    });
+  }
+  
+  return(
+    <MyPlanStack.Navigator screenOptions={{
+      headerTitleAlign: "center",
+      headerTintColor: constants.CORP_PINK
+    }}>
+      <MyPlanStack.Screen name="ListPlansScreen" component={ListPlansScreen} options={{headerShown: false}}/>
+      <MyPlanStack.Screen  name="ProfilePlanScreen" component={ProfilePlanScreen} options={{title:"Mi Plan"}}/>
+    </MyPlanStack.Navigator>
+  )
+};
 /*--------------------------------------------------------------------*/
 
 function getHeaderTitle(route){
@@ -154,7 +175,7 @@ function getHeaderTitle(route){
   switch(routeName){
     case 'Home':
       return 'Inicio';
-    case 'ListPlans':
+    case 'ListPlansScreen':
       return 'Planes Activos';
     case 'Post':
       return 'Crea tu Plan!';
@@ -174,7 +195,7 @@ function shouldHeaderBeShown(route) {
   switch(routeName) {
     case "Home":
       return false;
-    case "ListPlans":
+    case "ListPlansScreen":
       return false;
     case "Post":
       return false;

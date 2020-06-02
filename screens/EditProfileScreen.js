@@ -78,7 +78,6 @@ export default function EditProfileScreen({navigation, route}) {
 
     return (
         <View style={styles.container}>
-            {console.log("RENDERIZO EDITPROFILE")}
             <View style={styles.personalContainer}>
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.nameContainer}>{name}</Text>

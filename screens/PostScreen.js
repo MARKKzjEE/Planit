@@ -117,7 +117,7 @@ export default function PostScreen({navigation}) {
             <View style={styles.nameInputView}>
               <TextInput style={styles.nameInput}
               autoCapitalize="sentences"
-              maxLength={20}
+              maxLength={40}
               placeholder={"Dale un nombre a tu plan..."}
               placeholderTextColor={"grey"}
               onChangeText={name => setPlan({...plan, name})}
