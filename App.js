@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import { Ionicons } from '@expo/vector-icons'
 
@@ -11,7 +12,9 @@ import RegisterScreen from  './screens/RegisterScreen'
 import HomeScreen from  './screens/HomeScreen'
 import LoginScreen from  './screens/LoginScreen'
 import ListPlansScreen from './screens/ListPlansScreen'
+import ListPlansUsersScreen from './screens/ListPlansUsersScreen'
 import ProfilePlanScreen from './screens/ProfilePlanScreen'
+import ProfileUserPlanScreen from './screens/ProfileUserPlanScreen'
 import NotificationsScreen from './screens/NotificationScreen'
 import PostScreen from './screens/PostScreen'
 import ProfileScreen from './screens/ProfileScreen'
@@ -40,9 +43,9 @@ const AuthStackScreens = () => (
 );
 /*------------------------------------------------------------------*/
 
-/*2. Contenedor de Tabs y pilas de tabs*/
+/*2. Contenedor del Tab principal*/
 const AppContainer = createStackNavigator();
-const AppContainerScreens = (navigation, route) => {
+const AppContainerScreens = ({navigation, route}) => {
   
   return (
     <AppContainer.Navigator 
@@ -73,7 +76,7 @@ const MainTabScreens = ({navigation, route}) => {
           if(route.name == 'Home'){
             iconName = 'ios-home'
           } 
-          else if(route.name == 'ListPlansScreen'){
+          else if(route.name == 'TabLists'){
             iconName = 'md-list-box'
           }
           else if(route.name == 'Post'){
@@ -96,7 +99,7 @@ const MainTabScreens = ({navigation, route}) => {
       }}>
 
       <MainTab.Screen name="Home" component={HomeScreen}/>
-      <MainTab.Screen name="ListPlansScreen" component={MyPlanStackScreens}/>
+      <MainTab.Screen name="TabLists" component={TabListsScreens}/>
       <MainTab.Screen name="Post" component={PostScreen}/>
       <MainTab.Screen name="Profile" component={ProfileStackScreens}/>
       <MainTab.Screen name="Settings" component={SettingsStackScreens}/>
@@ -149,6 +152,7 @@ const SettingsStackScreens = ({navigation, route}) => {
   )
 };
 
+/*4.3 Pila de Mis Planes (Lista y Perfil de planes)*/
 const MyPlanStack = createStackNavigator();
 const MyPlanStackScreens = ({navigation, route}) => {
   
@@ -168,6 +172,45 @@ const MyPlanStackScreens = ({navigation, route}) => {
     </MyPlanStack.Navigator>
   )
 };
+
+/*4.4 Pila de Planes externos (Lista y Perfil de planes)*/
+const OtherPlanStack = createStackNavigator();
+const OtherPlanStackScreens = ({navigation, route}) => {
+  
+  if(route.state) {
+    navigation.setOptions({
+      tabBarVisible: route.state.index > 0  ? false : true
+    });
+  }
+  
+  return(
+    <OtherPlanStack.Navigator screenOptions={{
+      headerTitleAlign: "center",
+      headerTintColor: constants.CORP_PINK
+    }}>
+      <OtherPlanStack.Screen name="ListPlansUsersScreen" component={ListPlansUsersScreen} options={{headerShown: false}}/>
+      <OtherPlanStack.Screen  name="ProfileUserPlanScreen" component={ProfileUserPlanScreen} options={{title:"Plan Seleccionado"}}/>
+    </OtherPlanStack.Navigator>
+  )
+};
+
+/*4.5 Tab que guarda las dos listas de planes activos por usuario*/
+const TabLists = createMaterialTopTabNavigator();
+const TabListsScreens = ({navigation, route}) => {
+  return (
+    <TabLists.Navigator
+      initialRouteName="ListPlansScreen"
+      tabBarOptions={{
+        activeTintColor: constants.CORP_PINK,
+        labelStyle: { fontSize: 12, fontWeight: "bold" },
+        style: { marginTop: 40},
+        indicatorStyle: { backgroundColor: constants.CORP_PINK }
+      }}>
+        <TabLists.Screen name="ListPlansScreen" component={MyPlanStackScreens} options={{title:"Mis Planes"}}/>
+        <TabLists.Screen name="ListPlansUserScreen" component={OtherPlanStackScreens} options={{title:"Planes Participando"}}/>
+    </TabLists.Navigator>
+  );
+};
 /*--------------------------------------------------------------------*/
 
 function getHeaderTitle(route){
@@ -175,7 +218,7 @@ function getHeaderTitle(route){
   switch(routeName){
     case 'Home':
       return 'Inicio';
-    case 'ListPlansScreen':
+    case 'TabLists':
       return 'Planes Activos';
     case 'Post':
       return 'Crea tu Plan!';
@@ -195,7 +238,7 @@ function shouldHeaderBeShown(route) {
   switch(routeName) {
     case "Home":
       return false;
-    case "ListPlansScreen":
+    case "TabLists":
       return false;
     case "Post":
       return false;

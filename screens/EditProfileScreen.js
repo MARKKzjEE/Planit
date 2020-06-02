@@ -77,7 +77,7 @@ export default function EditProfileScreen({navigation, route}) {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.personalContainer}>
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.nameContainer}>{name}</Text>
@@ -114,7 +114,7 @@ export default function EditProfileScreen({navigation, route}) {
                 <Text style={{fontWeight:"700",color:constants.CORP_PINK}}>Añade las fotos que más te gusten!</Text>
             </TouchableOpacity>
             
-        </View>
+        </ScrollView>
     );
 }
 

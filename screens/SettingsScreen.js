@@ -11,6 +11,8 @@ export default function SettingsScreen({navigation}) {
     };
     
     return (
+
+        
         <View style={styles.container}>
             <TouchableOpacity style={styles.icon} onPress={changeScreen}>
                 <Ionicons 
