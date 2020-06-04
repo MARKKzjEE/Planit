@@ -12,16 +12,19 @@ const height = width * 0.65;
 
 export default function ProfileScreen({navigation, route})  {
 
-    const [images, setImages] = useState([])
-    const [name, setName] = useState("")
-    const [description, setDescription] = useState("")
-    const [avatar, setAvatar] = useState("")
-    const [active, setActive] = useState(0)
+    const [images, setImages] = useState([]);
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [avatar, setAvatar] = useState("");
+    const [active, setActive] = useState(0);
+    const [stats1, setStats1] = useState(0);
+    
     
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             loadInfo();
             loadImages();
+            loadStats();
           });
         return unsubscribe;
     },[navigation]);
@@ -60,7 +63,18 @@ export default function ProfileScreen({navigation, route})  {
             setName(doc.data().name);
             setDescription(doc.data().description);
             setAvatar(doc.data().avatar);
-            console.log(doc.data().avatar);
+        })
+        .catch((error) => {
+            console.log(error)
+        });
+    };
+
+    const loadStats = async () => {
+        let count = 0
+        await firebase.firestore()
+        .collection("plans").where("uid","==",firebase.auth().currentUser.uid).get()
+        .then((snapshot) => {
+            setStats1(snapshot.size)
         })
         .catch((error) => {
             console.log(error)
@@ -76,7 +90,6 @@ export default function ProfileScreen({navigation, route})  {
     
     return (
         <View style={styles.container}>
-            {console.log("RENDERIZO PROFILE")}
             <TouchableOpacity style={styles.icon} onPress={() => {
                         navigation.push('EditProfile', {
                             name: name,
@@ -108,8 +121,12 @@ export default function ProfileScreen({navigation, route})  {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <View style={{width:"100%",flexDirection:"row", justifyContent:"space-evenly"}}>
+                <Text style={{color:"grey",fontWeight:"bold"}}>Planes creados: <Text style={{color:constants.CORP_PINK}}>{stats1}</Text></Text>
+                <Text style={{color:"grey",fontWeight:"bold"}}>Planes participados: <Text style={{color:constants.CORP_PINK}}>{"0"}</Text></Text>
+            </View>
             
-            <Text style={{fontWeight:"bold", marginLeft:30}}>Mis fotos:</Text>
             <View style={styles.imagesContainer}>
                 <ScrollView 
                     pagingEnabled 
@@ -149,14 +166,12 @@ const styles = StyleSheet.create({
         
     },
     personalContainer: {
-        flex: 1,
         flexDirection: "row",
         justifyContent: "space-around",
         maxHeight: 200,
         marginTop: 80,
     },
     descriptionContainer: {
-        flex: 1,
         flexDirection: "column",
         height: 200,
         marginLeft: 30,
@@ -189,12 +204,10 @@ const styles = StyleSheet.create({
         height: "100%",
         width: 200,
         borderRadius: 20,
-        flex: 1
     },
     descriptionInput: {
         marginVertical: 10,
         height: "100%",
-        flex: 1
     },
     imagesContainer: {
         marginVertical: 20,

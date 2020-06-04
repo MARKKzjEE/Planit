@@ -33,7 +33,7 @@ export default function ProfilePlanScreen({navigation, route})  {
     }, []);
 
     const [plan, setPlan] = useState(route.params.plan);
-    const [users, setUsers] = useState(["id1","id2","id3","id4","id5","id6"]);
+    const [users, setUsers] = useState(["id1","id2","id3","id4","id5","id6","id7","id8","id9","id10"]);
 
     const alertDelete = () => {
         Alert.alert(
@@ -73,7 +73,7 @@ export default function ProfilePlanScreen({navigation, route})  {
     return (
         
         <View style={styles.container}>
-            {console.log(plan.id)}
+            {console.log(route) && console.log(navigation)}
             <View style={styles.userCreation}>
                 <View>
                     <Text style={styles.headersWhiteBig}>{plan.plan.name}</Text>
@@ -110,9 +110,9 @@ export default function ProfilePlanScreen({navigation, route})  {
                         a las
                         {
                             " "
-                            + new Date(plan.plan.date.toDate()).getHours()
+                            + ("0" + new Date(plan.plan.date.toDate()).getHours()).slice(-2)
                             + ":"
-                            + new Date(plan.plan.date.toDate()).getMinutes()
+                            + ("0" + new Date(plan.plan.date.toDate()).getMinutes()).slice(-2)
                             + "h."
                         }
                         </Text>
@@ -136,15 +136,18 @@ export default function ProfilePlanScreen({navigation, route})  {
                             <Ionicons name="ios-people" color={constants.CORP_PINK} size={25} style={{marginRight:15}}></Ionicons>
                             <Text style={{color:"grey", fontWeight: "bold"}}>Participantes:</Text>
                         </View>
-                        <FlatList
-                            style={styles.feed}
-                            data={users}
-                            renderItem={ ({item}) => renderUsers(item) } 
-                            keyExtractor={item => item}
-                            showsVerticalScrollIndicator= {true}>
-                        </FlatList>
+                        <View style={styles.containerFeed}>
+                            <FlatList
+                                style={styles.feed}
+                                data={users}
+                                renderItem={ ({item}) => renderUsers(item) } 
+                                keyExtractor={item => item}
+                                showsVerticalScrollIndicator= {true}>
+                            </FlatList>
+                        </View>
+                        
                     </View>
-                    
+        
                 </View>
             </View>
         </View>
@@ -156,7 +159,6 @@ const styles = StyleSheet.create({
   
     container: {
       flex: 1,
-      alignItems: "center"
     },
     userCreation: {
         backgroundColor: constants.CORP_LIGHT_PINK,
@@ -200,7 +202,7 @@ const styles = StyleSheet.create({
         marginVertical: 7
     },
     listUsers: {
-        width: "100%",
+        maxWidth: "100%",
         height: 150,
-    }
+    },
 })

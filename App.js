@@ -98,7 +98,7 @@ const MainTabScreens = ({navigation, route}) => {
         showLabel: false,
       }}>
 
-      <MainTab.Screen name="Home" component={HomeScreen}/>
+      <MainTab.Screen name="Home" component={HomePlanStackScreens}/>
       <MainTab.Screen name="TabLists" component={TabListsScreens}/>
       <MainTab.Screen name="Post" component={PostScreen}/>
       <MainTab.Screen name="Profile" component={ProfileStackScreens}/>
@@ -137,7 +137,7 @@ const SettingsStackScreens = ({navigation, route}) => {
   
   if(route.state) {
     navigation.setOptions({
-      tabBarVisible: route.state.index > 0  ? false : true
+      tabBarVisible: navigation > 0  ? false : true
     });
   }
   
@@ -165,7 +165,8 @@ const MyPlanStackScreens = ({navigation, route}) => {
   return(
     <MyPlanStack.Navigator screenOptions={{
       headerTitleAlign: "center",
-      headerTintColor: constants.CORP_PINK
+      headerTintColor: constants.CORP_PINK,
+      headerStyle: {height: 60}
     }}>
       <MyPlanStack.Screen name="ListPlansScreen" component={ListPlansScreen} options={{headerShown: false}}/>
       <MyPlanStack.Screen  name="ProfilePlanScreen" component={ProfilePlanScreen} options={{title:"Mi Plan"}}/>
@@ -186,7 +187,8 @@ const OtherPlanStackScreens = ({navigation, route}) => {
   return(
     <OtherPlanStack.Navigator screenOptions={{
       headerTitleAlign: "center",
-      headerTintColor: constants.CORP_PINK
+      headerTintColor: constants.CORP_PINK,
+      headerStyle: {height: 60}
     }}>
       <OtherPlanStack.Screen name="ListPlansUsersScreen" component={ListPlansUsersScreen} options={{headerShown: false}}/>
       <OtherPlanStack.Screen  name="ProfileUserPlanScreen" component={ProfileUserPlanScreen} options={{title:"Plan Seleccionado"}}/>
@@ -197,19 +199,42 @@ const OtherPlanStackScreens = ({navigation, route}) => {
 /*4.5 Tab que guarda las dos listas de planes activos por usuario*/
 const TabLists = createMaterialTopTabNavigator();
 const TabListsScreens = ({navigation, route}) => {
+
   return (
     <TabLists.Navigator
       initialRouteName="ListPlansScreen"
       tabBarOptions={{
         activeTintColor: constants.CORP_PINK,
         labelStyle: { fontSize: 12, fontWeight: "bold" },
-        style: { marginTop: 40},
-        indicatorStyle: { backgroundColor: constants.CORP_PINK }
+        indicatorStyle: { backgroundColor: constants.CORP_PINK },
+        style: {height:75},
+        tabStyle: {marginTop:25}
       }}>
         <TabLists.Screen name="ListPlansScreen" component={MyPlanStackScreens} options={{title:"Mis Planes"}}/>
         <TabLists.Screen name="ListPlansUserScreen" component={OtherPlanStackScreens} options={{title:"Planes Participando"}}/>
     </TabLists.Navigator>
   );
+};
+
+/*4.4 Pila de Planes externos (Lista y Perfil de planes)*/
+const HomePlanStack = createStackNavigator();
+const HomePlanStackScreens = ({navigation, route}) => {
+  
+  if(route.state) {
+    navigation.setOptions({
+      tabBarVisible: route.state.index > 0  ? false : true
+    });
+  }
+  
+  return(
+    <HomePlanStack.Navigator screenOptions={{
+      headerTitleAlign: "center",
+      headerTintColor: constants.CORP_PINK
+    }}>
+      <HomePlanStack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
+      <HomePlanStack.Screen  name="ProfileUserPlanScreen" component={ProfileUserPlanScreen} options={{title:"Plan Seleccionado"}}/>
+    </HomePlanStack.Navigator>
+  )
 };
 /*--------------------------------------------------------------------*/
 

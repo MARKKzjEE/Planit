@@ -12,14 +12,22 @@ import Fire from '../Fire';
 
 
 
-export default function ProfilePlanScreen({navigation, route})  {
+export default function ProfileUserPlanScreen({navigation, route})  {
 
     YellowBox.ignoreWarnings([
         'Non-serializable values were found in the navigation state',
     ]);
 
     const [plan, setPlan] = useState(route.params.plan);
-    const [users, setUsers] = useState(["id1","id2","id3","id4","id5","id6"]);
+    const [users, setUsers] = useState(["id1","id2","id3","id4","id5","id6","id7","id8","id9","id10"]);
+    const [creator, setCreator] = useState({});
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            loadUserPart();
+          });
+        return unsubscribe;
+    },[navigation]);
 
     const renderUsers = item => {
         return (
@@ -28,16 +36,26 @@ export default function ProfilePlanScreen({navigation, route})  {
         </View>
         );  
     };
+
+    const loadUserPart = async () => {
+        await firebase.firestore()
+            .collection('users').doc(plan.uid).get()
+            .then((doc) => {
+                setCreator(doc.data());
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
     
     return (
         
         <View style={styles.container}>
-            {console.log(plan.id)}
             <View style={styles.userCreation}>
                 <View>
                     <Text style={styles.headersWhiteBig}>{plan.plan.name}</Text>
-                    <Image source={{uri: firebase.auth().currentUser.photoURL}} style={styles.avatar}></Image>
-                    <Text style={{alignSelf: "center", fontWeight: "bold", color: "white", fontSize: 12}}>Creado por ti</Text>
+                    <Image source={{uri: creator.avatar}} style={styles.avatar}></Image>
+                    <Text style={{alignSelf: "center", fontWeight: "bold", color: "white", fontSize: 12}}>Creado por {creator.name}</Text>
                 </View>
             </View>
 
@@ -53,7 +71,7 @@ export default function ProfilePlanScreen({navigation, route})  {
                     <View style={styles.infoBottomWidth}>
                         <View style={{flexDirection:"row"}}>
                             <Ionicons name="md-calendar" color={constants.CORP_PINK} size={25} style={{marginRight:15}}></Ionicons>
-                            <Text style={{color:"grey", fontWeight: "bold"}}>Tu plan empieza:</Text>
+                            <Text style={{color:"grey", fontWeight: "bold"}}>El plan empieza:</Text>
                         </View>
                         <Text style={{color: "grey"}}>
                         El
@@ -69,9 +87,9 @@ export default function ProfilePlanScreen({navigation, route})  {
                         a las
                         {
                             " "
-                            + new Date(plan.plan.date.toDate()).getHours()
+                            + ("0" + new Date(plan.plan.date.toDate()).getHours()).slice(-2)
                             + ":"
-                            + new Date(plan.plan.date.toDate()).getMinutes()
+                            + ("0" + new Date(plan.plan.date.toDate()).getMinutes()).slice(-2)
                             + "h."
                         }
                         </Text>
@@ -95,13 +113,16 @@ export default function ProfilePlanScreen({navigation, route})  {
                             <Ionicons name="ios-people" color={constants.CORP_PINK} size={25} style={{marginRight:15}}></Ionicons>
                             <Text style={{color:"grey", fontWeight: "bold"}}>Participantes:</Text>
                         </View>
-                        <FlatList
-                            style={styles.feed}
-                            data={users}
-                            renderItem={ ({item}) => renderUsers(item) } 
-                            keyExtractor={item => item}
-                            showsVerticalScrollIndicator= {true}>
-                        </FlatList>
+                        <View style={styles.containerFeed}>
+                            <FlatList
+                                style={styles.feed}
+                                data={users}
+                                renderItem={ ({item}) => renderUsers(item) } 
+                                keyExtractor={item => item}
+                                showsVerticalScrollIndicator= {true}>
+                            </FlatList>
+                        </View>
+                        
                     </View>
                     
                 </View>
@@ -115,7 +136,6 @@ const styles = StyleSheet.create({
   
     container: {
       flex: 1,
-      alignItems: "center"
     },
     userCreation: {
         backgroundColor: constants.CORP_LIGHT_PINK,
@@ -159,7 +179,7 @@ const styles = StyleSheet.create({
         marginVertical: 7
     },
     listUsers: {
-        width: "100%",
+        maxWidth: "100%",
         height: 150,
-    }
+    },
 })

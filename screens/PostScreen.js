@@ -74,10 +74,6 @@ export default function PostScreen({navigation}) {
     const handleGroupType = () => {
       setPlan(previousState => ({...plan, isPrivate: !previousState.isPrivate}));
     }
-    
-    const auxiliariano = () => {
-      console.log(plan);
-    }
 
     const handleCreation = async () =>{
       await Fire.shared
@@ -98,7 +94,6 @@ export default function PostScreen({navigation}) {
     return (
       
       <View style={styles.container}>
-        {console.log(plan)}
         <View style={styles.header}>
           <TouchableOpacity/>
           <Text style={styles.title}>Crea tu Plan!</Text>
@@ -163,9 +158,9 @@ export default function PostScreen({navigation}) {
                 a las
                 {
                   " "
-                  + plan.date.getHours()
+                  + ("0" + plan.date.getHours()).slice(-2)
                   + ":"
-                  + plan.date.getMinutes()
+                  + ("0" + plan.date.getMinutes()).slice(-2)
                   + "h!"
                 }
             </Text>
@@ -176,7 +171,7 @@ export default function PostScreen({navigation}) {
             <View style={styles.descriptionInputView}>
               <TextInput style={styles.descriptionInput}
                 autoCapitalize="none"
-                maxLength={100}
+                maxLength={200}
                 multiline={true}
                 placeholder={"Describe el plan aquí... (máximo 150 carácteres)"}
                 placeholderTextColor={"grey"}

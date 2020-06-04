@@ -56,18 +56,18 @@ export default function ListPlansScreen({navigation, route}) {
     const renderPlans = item => {
       return(
         <View style={styles.feedItem}>
-
             <View style={styles.firstLine}>
               <Image source={{uri: firebase.auth().currentUser.photoURL}} style={styles.avatar}></Image>
-              <Text style={{color: constants.CORP_PINK, fontWeight: "bold", fontSize: 20}}>{item.plan.name}</Text>
+              <Text style={{color: constants.CORP_PINK, fontWeight: "bold", fontSize: 18}}>{item.plan.name}</Text>
               {item.plan.isPrivate ? (
-                <Text style={{color: "grey", fontWeight: "bold"}}>Privado</Text>
+                <Ionicons name="ios-lock" size={25} color={constants.CORP_PINK} style={styles.avatar}></Ionicons>
                 ) : (
-                <Text style={{color: "grey", fontWeight: "bold"}}>Público</Text>
+                <Ionicons name="ios-unlock" size={25} color={constants.CORP_PINK} style={styles.avatar}></Ionicons>
               )}
             </View>
+
             <View style={styles.secondLine}>
-                <Text style={{width: "80%"}}>{item.plan.description}</Text>
+                <Text style={{width: "90%"}}>{item.plan.description}</Text>
                 <TouchableOpacity style={styles.editButton} onPress={() => {
                         navigation.push('ProfilePlanScreen', {
                             plan: item
@@ -76,8 +76,9 @@ export default function ListPlansScreen({navigation, route}) {
                   <Ionicons name="ios-search" size={20} color="white"></Ionicons>
                 </TouchableOpacity>
             </View>
+
             <View style={styles.thirdLine}>
-                <Text style={{color: "grey", fontWeight: "bold"}}>
+                <Text style={{color: constants.CORP_PINK}}>
                   Tu plan empieza el
                   {
                     " "
@@ -91,9 +92,9 @@ export default function ListPlansScreen({navigation, route}) {
                   a las
                   {
                     " "
-                    + new Date(item.plan.date.toDate()).getHours()
+                    + ("0" + new Date(item.plan.date.toDate()).getHours()).slice(-2)
                     + ":"
-                    + new Date(item.plan.date.toDate()).getMinutes()
+                    + ("0" + new Date(item.plan.date.toDate()).getMinutes()).slice(-2)
                     + "h!"
                   }
                 </Text>
@@ -104,9 +105,7 @@ export default function ListPlansScreen({navigation, route}) {
 
     return (
         <View style={styles.container}>
-          <View>
-            
-          </View>
+          {console.log(route.state)}
           { plans && plans.length > 0 ? (
             <FlatList
               style={styles.feed}
@@ -130,7 +129,7 @@ export default function ListPlansScreen({navigation, route}) {
         flex: 1,
       },
       feed: {
-        marginVertical: 60,
+        marginVertical: 20,
         marginHorizontal: 8,
       },
       feedItem: {
@@ -140,15 +139,20 @@ export default function ListPlansScreen({navigation, route}) {
         minHeight: 150,
       },
       firstLine: {
-        flexDirection: "row",
-        justifyContent: "space-between",
+        flexDirection:"row",
+        justifyContent:"space-between",
         marginVertical: 10,
-        marginHorizontal: 10
+        marginHorizontal: 10,
+      },
+      privacity: {
+        alignItems: "center",
+        marginBottom:10
       },
       secondLine: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        marginBottom:10
       },
       thirdLine: {
         alignItems: "center",

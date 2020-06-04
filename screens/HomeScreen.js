@@ -88,8 +88,10 @@ export default function HomeScreen({navigation}) {
         .then((snapshot) => {
             if(!snapshot.empty){
                 snapshot.forEach(doc => {
-                  auxMerge = {...doc.data(), id: doc.id};
-                  auxPlans.push(auxMerge);
+                  if(doc.data().uid !== firebase.auth().currentUser.uid){
+                    auxMerge = {...doc.data(), id: doc.id};
+                    auxPlans.push(auxMerge);
+                  }
                 });
                 setPlans(auxPlans);
                 setReady1(true);
@@ -109,6 +111,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={{flex: 1}}>
+      {console.log(plans)}
       <View style={styles.containerHeader}>
             <TouchableOpacity>
             </TouchableOpacity>
@@ -127,27 +130,26 @@ export default function HomeScreen({navigation}) {
             <Marker
               coordinate={item.plan.planLocation}
               key={i}>
-              <Callout>
+              <Callout onPress={() => {
+                        navigation.push('ProfileUserPlanScreen', {
+                            plan: item
+                        });
+                }}>
                 <View>
-                  <View style={{flexDirection:"row", justifyContent:"center", marginBottom: 15}}>
+                  <View style={{flexDirection:"row", justifyContent:"space-evenly", marginBottom: 15}}>
                     <Text style={{fontWeight:"bold"}}>{item.plan.name}</Text>
                     {item.plan.isPrivate ? (
-                      <Ionicons name="ios-lock" size={25} color={constants.CORP_PINK} style={{position:"absolute", top:0,right:0,left:0,bottom:0}}></Ionicons>
+                      <Ionicons name="ios-lock" size={25} color={constants.CORP_PINK}></Ionicons>
                     ) : (
-                      <Ionicons name="ios-unlock" size={25} color={constants.CORP_PINK} style={{position:"absolute", top:0,right:0,left:0,bottom:0}}></Ionicons>
+                      <Ionicons name="ios-unlock" size={25} color={constants.CORP_PINK}></Ionicons>
                     )}
                   </View>
-                  <Text style={{width:200, marginBottom:15, color:"grey", alignContent:"center"}}>{item.plan.description}</Text>
-                  <View style={{flexDirection:"row", justifyContent:"space-around", marginBottom:15}}>
-                    <TouchableOpacity style={{width:90, height:20, backgroundColor:"grey", borderRadius:3, justifyContent:"center", alignItems:"center"}}>
-                      <Text style={{color:"white",fontWeight:"bold"}}>Saber más</Text>
-                    </TouchableOpacity>
+                  <View style={{alignItems:"center",width:250,marginBottom:25,marginHorizontal:5}}>
+                    <Text style={{color:"grey"}}>{item.plan.description}</Text>
+                  </View>
+                  <View style={{alignItems:"center",marginBottom:15}}>
                     <TouchableOpacity style={{width:90, height:20, backgroundColor:constants.CORP_PINK, borderRadius:3, justifyContent:"center", alignItems:"center"}}>
-                      {item.plan.isPrivate ? (
-                        <Text style={{color:"white",fontWeight:"bold"}}>Solicitar</Text>
-                      ) : (
-                        <Text style={{color:"white",fontWeight:"bold"}}>Únete</Text>
-                      )}
+                      <Text style={{color:"white",fontWeight:"bold"}}>Saber más</Text>
                     </TouchableOpacity>
                   </View>
               
