@@ -9,6 +9,7 @@ const firebase = require("firebase");
 require("@firebase/firestore");
 
 import Fire from '../Fire';
+import { PlaneDetection } from 'expo/build/AR';
 
 
 
@@ -16,28 +17,24 @@ export default function ProfileUserPlanScreen({navigation, route})  {
 
     YellowBox.ignoreWarnings([
         'Non-serializable values were found in the navigation state',
+        'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.'
     ]);
 
     const [plan, setPlan] = useState(route.params.plan);
-    const [users, setUsers] = useState(["id1","id2","id3","id4","id5","id6","id7","id8","id9","id10"]);
     const [creator, setCreator] = useState({});
+    const [user, setUser] = useState({});
+    const [userJoined, setJoined] = useState(false);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            loadUserPart();
+            loadCreator();
+            loadUser();
+            isParticipating();
           });
         return unsubscribe;
     },[navigation]);
 
-    const renderUsers = item => {
-        return (
-            <View>
-            <Text>USUARIO</Text>
-        </View>
-        );  
-    };
-
-    const loadUserPart = async () => {
+    const loadCreator = async () => {
         await firebase.firestore()
             .collection('users').doc(plan.uid).get()
             .then((doc) => {
@@ -46,7 +43,89 @@ export default function ProfileUserPlanScreen({navigation, route})  {
             .catch((error) => {
                 console.log(error);
             });
-    }
+    };
+
+    const loadUser = async () => {
+        await firebase.firestore()
+            .collection('users').doc(firebase.auth().currentUser.uid).get()
+            .then((doc) => {
+                setUser(doc.data());
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const isParticipating = async () => {
+        await firebase.firestore()
+            .collection('plans').doc(plan.id).get()
+            .then((doc) => {
+                for(var i = 0; i < doc.data().plan.participants.length; i++) {
+                    if (doc.data().plan.participants[i].uid == firebase.auth().currentUser.uid) {
+                        setJoined(true);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const handleJoin = async () => {
+        await Fire.shared
+            .joinPublicPlan(plan,creator,user)
+            .then( () => {
+                console.log("Usuario añadido con éxito!");
+                navigation.navigate('Home');
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+    };
+
+
+
+    const ListUsers = () => {
+        if(plan.plan.participants.length > 0) {
+            return(
+                <View style={{paddingVertical: 5,borderColor:constants.CORP_PINK,borderWidth:2,backgroundColor:"white",marginTop: 10}}>
+                    {plan.plan.participants && (plan.plan.participants.map((item, i) => 
+                        <View key={i} style={{borderBottomWidth:2,borderColor:constants.CORP_GREY,marginHorizontal: 10,flexDirection: "row"}}>
+                            <Image style={{width: 50, height: 50, borderRadius: 18,}} source={{uri: item.image}}></Image>
+                            <Text style={{marginLeft: 20,color: "grey"}} key={i}>{item.name}</Text>
+                        </View>
+                        )
+                    )}
+                </View>
+            );
+        } else {
+            return (
+                <View style={{borderBottomWidth: 2, borderColor:constants.CORP_GREY,}}>
+                    <Text style={{color:"grey"}}>Todavía no hay participantes.</Text>
+                </View>
+            );
+        }
+    };
+
+    const ButtonToJoin = () => {
+        if(!userJoined) {
+            return(
+                <View style={{alignItems:"center",marginVertical:40}}>
+                        {plan.plan.isPrivate ? (
+                            <TouchableOpacity style={{borderRadius:5,paddingHorizontal:20,paddingVertical:10,backgroundColor:constants.CORP_PINK,marginRight: 20}}>
+                                <Text style={{color:"white", fontWeight:"bold",fontSize:15}}>Solicitar</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity onPress={handleJoin} style={{borderRadius:5,paddingHorizontal:20,paddingVertical:10,backgroundColor:constants.CORP_PINK,marginRight: 20}}>
+                                <Text style={{color:"white", fontWeight:"bold",fontSize:15}}>Únete</Text>
+                            </TouchableOpacity>
+                        )}         
+                </View>
+            );
+        } else {
+            return null;
+        }
+    };
     
     return (
         
@@ -59,7 +138,7 @@ export default function ProfileUserPlanScreen({navigation, route})  {
                 </View>
             </View>
 
-            <View style={styles.infocontainer}>
+            <ScrollView style={styles.infocontainer}>
                 <View style={{marginHorizontal:15}}>
                     <View style={styles.infoBottomWidth}>
                         <View style={{flexDirection:"row"}}>
@@ -107,26 +186,20 @@ export default function ProfileUserPlanScreen({navigation, route})  {
                             <Text style={{color:"grey"}}>Este plan es de acceso público, el creador limita el número de participantes. </Text>
                         )}
                     </View>
+                    
 
                     <View style={styles.listUsers}>
                         <View style={{flexDirection:"row"}}>
                             <Ionicons name="ios-people" color={constants.CORP_PINK} size={25} style={{marginRight:15}}></Ionicons>
                             <Text style={{color:"grey", fontWeight: "bold"}}>Participantes:</Text>
                         </View>
-                        <View style={styles.containerFeed}>
-                            <FlatList
-                                style={styles.feed}
-                                data={users}
-                                renderItem={ ({item}) => renderUsers(item) } 
-                                keyExtractor={item => item}
-                                showsVerticalScrollIndicator= {true}>
-                            </FlatList>
-                        </View>
                         
+                        <ListUsers/>
                     </View>
-                    
+
+                    <ButtonToJoin/>
                 </View>
-            </View>
+            </ScrollView>
         </View>
         
     );
@@ -151,7 +224,6 @@ const styles = StyleSheet.create({
     infocontainer: {
         width: "100%",
         marginBottom: 10,
-        alignItems: "center"
     },
     headersWhiteBig: {
         fontWeight: "bold",
@@ -180,6 +252,5 @@ const styles = StyleSheet.create({
     },
     listUsers: {
         maxWidth: "100%",
-        height: 150,
     },
 })

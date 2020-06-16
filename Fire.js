@@ -63,6 +63,7 @@ class Fire {
                 name: regUser.name,
                 email: regUser.email,
                 avatar: null,
+                participating: []
             });
 
             if(regUser.avatar){
@@ -147,7 +148,7 @@ class Fire {
                 .add({
                     plan,
                     uid: firebase.auth().currentUser.uid,
-                    createdAt: new Date()
+                    createdAt: new Date(),
                 })
                 .then(ref => {
                     res(ref)
@@ -170,9 +171,41 @@ class Fire {
                     rej(error)
                 });
         });
-    }
+    };
 
+    joinPublicPlan = async (plan, creator, user) => {
+        let auxParticipants = plan.plan.participants;
+        auxParticipants.push({
+            uid: firebase.auth().currentUser.uid,
+            name: firebase.auth().currentUser.displayName,
+            image: firebase.auth().currentUser.photoURL,
+        });
+ 
+        await firebase.firestore()
+            .collection("plans").doc(plan.id)
+            .update({"plan.participants": auxParticipants})
+            .then(() => {
+                console.log("Bien1")
+            })
+            .catch(e => {
+                console.log(e)
+            });
 
+        let auxParticipating = user.participating;
+        auxParticipating.push({
+            id: plan.id
+        });
+        
+        await firebase.firestore()
+        .collection("users").doc(firebase.auth().currentUser.uid)
+            .update({"participating": auxParticipating})
+            .then(() => {
+                console.log("Bien2")
+            })
+            .catch(e => {
+                console.log(e)
+            });
+    };
 }
 
 Fire.shared = new Fire()

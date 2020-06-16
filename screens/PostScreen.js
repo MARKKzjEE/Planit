@@ -22,6 +22,7 @@ export default function PostScreen({navigation}) {
       description: "",
       isPrivate : false,
       date: new Date(),
+      participants: [],
       location: {
       },
       planLocation: {

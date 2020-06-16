@@ -26,6 +26,12 @@ import Fire from './Fire'
 import Firetimerbug from './firetimerbug'
 import firebase from 'firebase';
 
+import { YellowBox } from 'react-native';
+
+YellowBox.ignoreWarnings([
+  'Non-serializable values were found in the navigation state',
+]);
+
 /*1. Navegación inicial. Cargas y Control Usuario*/
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();

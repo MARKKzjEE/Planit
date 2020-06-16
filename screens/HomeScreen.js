@@ -111,7 +111,6 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={{flex: 1}}>
-      {console.log(plans)}
       <View style={styles.containerHeader}>
             <TouchableOpacity>
             </TouchableOpacity>

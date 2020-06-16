@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, Alert, ScrollView, Dimensions, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { YellowBox } from 'react-native';
+
 
 import * as constants from '../constants/constants';
 
@@ -10,13 +10,7 @@ require("@firebase/firestore");
 
 import Fire from '../Fire';
 
-
-
 export default function ProfilePlanScreen({navigation, route})  {
-
-    YellowBox.ignoreWarnings([
-        'Non-serializable values were found in the navigation state',
-    ]);
 
     navigation.setOptions({
         headerRight:() => (
@@ -33,7 +27,6 @@ export default function ProfilePlanScreen({navigation, route})  {
     }, []);
 
     const [plan, setPlan] = useState(route.params.plan);
-    const [users, setUsers] = useState(["id1","id2","id3","id4","id5","id6","id7","id8","id9","id10"]);
 
     const alertDelete = () => {
         Alert.alert(
@@ -62,12 +55,26 @@ export default function ProfilePlanScreen({navigation, route})  {
             });
     };
 
-    const renderUsers = item => {
-        return (
-            <View>
-            <Text>USUARIO</Text>
-        </View>
-        );  
+    const ListUsers = () => {
+        if(plan.plan.participants.length > 0) {
+            return(
+                <View style={{paddingVertical: 5,borderColor:constants.CORP_PINK,borderWidth:2,backgroundColor:"white",marginTop: 10}}>
+                    {plan.plan.participants && (plan.plan.participants.map((item, i) => 
+                        <View key={i} style={{borderBottomWidth:2,borderColor:constants.CORP_GREY,marginHorizontal: 10,flexDirection: "row"}}>
+                            <Image style={{width: 50, height: 50, borderRadius: 18,}} source={{uri: item.image}}></Image>
+                            <Text style={{marginLeft: 20,color: "grey"}} key={i}>{item.name}</Text>
+                        </View>
+                        )
+                    )}
+                </View>
+            );
+        } else {
+            return (
+                <View style={{borderBottomWidth: 2, borderColor:constants.CORP_GREY,}}>
+                    <Text style={{color:"grey"}}>Todavía no hay participantes.</Text>
+                </View>
+            );
+        }
     };
     
     return (
@@ -136,18 +143,9 @@ export default function ProfilePlanScreen({navigation, route})  {
                             <Ionicons name="ios-people" color={constants.CORP_PINK} size={25} style={{marginRight:15}}></Ionicons>
                             <Text style={{color:"grey", fontWeight: "bold"}}>Participantes:</Text>
                         </View>
-                        <View style={styles.containerFeed}>
-                            <FlatList
-                                style={styles.feed}
-                                data={users}
-                                renderItem={ ({item}) => renderUsers(item) } 
-                                keyExtractor={item => item}
-                                showsVerticalScrollIndicator= {true}>
-                            </FlatList>
-                        </View>
                         
+                        <ListUsers/>
                     </View>
-        
                 </View>
             </View>
         </View>

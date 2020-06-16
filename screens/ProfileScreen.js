@@ -124,7 +124,6 @@ export default function ProfileScreen({navigation, route})  {
 
             <View style={{width:"100%",flexDirection:"row", justifyContent:"space-evenly"}}>
                 <Text style={{color:"grey",fontWeight:"bold"}}>Planes creados: <Text style={{color:constants.CORP_PINK}}>{stats1}</Text></Text>
-                <Text style={{color:"grey",fontWeight:"bold"}}>Planes participados: <Text style={{color:constants.CORP_PINK}}>{"0"}</Text></Text>
             </View>
             
             <View style={styles.imagesContainer}>

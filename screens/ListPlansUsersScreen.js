@@ -15,12 +15,13 @@ export default function ListPlansUserScreen({navigation, route}) {
   ]);
 
   const [plans, setPlans] = useState([]);
+  const [listIdPlans, setList] = useState([])
   
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       try {
           (async () => {
-            //loadMyPlans();
+            loadPlans();
           })();
       }
       catch(error){
@@ -33,23 +34,28 @@ export default function ListPlansUserScreen({navigation, route}) {
     return unsubscribe;
     },[navigation]);
 
-    const loadMyPlans = async () => {
-      let auxPlans = [];
-      let auxMerge = {};
+    const loadPlans = async () => {
+      let auxMerge = []
+      let auxPlans = []
       await firebase.firestore()
-          .collection('plans').where('uid', '==', firebase.auth().currentUser.uid).get()
-          .then((snapshot) => {
-              if(!snapshot.empty){
-                  snapshot.forEach(doc => {
-                    auxMerge = {...doc.data(), id: doc.id};
-                    auxPlans.push(auxMerge);
-                  });
-                  setPlans(auxPlans);
-              }
-          })
-          .catch((error) => {
-              console.log(error);
-          });
+          .collection("users").doc(firebase.auth().currentUser.uid).get()
+          .then((doc) => {
+            setList(doc.data().participating);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+      for (var i=0; i < listIdPlans.length; i++){
+        await firebase.firestore().collection("plans").doc(listIdPlans[i].id).get()
+        .then((doc) => {
+          auxMerge = {...doc.data(), id: doc.id};
+          auxPlans.push(auxMerge);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+      }
+      setPlans(auxPlans);
     };
 
     //item.id para pasarle al boton la id del doc que debera mostrar por pantalla cuando se navegue
@@ -69,7 +75,7 @@ export default function ListPlansUserScreen({navigation, route}) {
             <View style={styles.secondLine}>
                 <Text style={{width: "90%"}}>{item.plan.description}</Text>
                 <TouchableOpacity style={styles.editButton} onPress={() => {
-                        navigation.push('ProfilePlanScreen', {
+                        navigation.push('ProfileUserPlanScreen', {
                             plan: item
                         });
                 }}>
@@ -105,7 +111,6 @@ export default function ListPlansUserScreen({navigation, route}) {
 
     return (
         <View style={styles.container}>
-          {console.log(route.state)}
           { plans && plans.length > 0 ? (
             <FlatList
               style={styles.feed}
