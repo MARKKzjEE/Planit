@@ -159,18 +159,30 @@ class Fire {
         });
     };
 
-    deletePlan = async (id) => {
-        return new Promise((res, rej) => {
-            firebase.firestore()
-                .collection("plans").doc(id)
-                .delete()
-                .then(ref => {
-                    res(ref)
+    deletePlan = async (plan) => {
+        /*
+        console.log("ArraySize: ", plan.plan.participants.length);
+        if(plan.plan.participants.length > 0) {
+            for (var i = 0; i < plan.plan.participants.length; i++){
+                console.log("Contador: ", i);
+                console.log(plan.plan.participants[i].uid);
+                await firebase.firestore().collection("users").doc(plan.plan.participants[i].uid)
+                .update({
+                    participating: "hola"
                 })
-                .catch(error => {
-                    rej(error)
+                .catch(() =>{
                 });
-        });
+            }
+        }*/
+
+        await firebase.firestore()
+            .collection("plans").doc(plan.id)
+            .delete()
+            .then(() => {
+                console.log("Plan Eliminado");
+            })
+            .catch(() => {
+            });    
     };
 
     joinPublicPlan = async (plan, creator, user) => {
@@ -185,10 +197,8 @@ class Fire {
             .collection("plans").doc(plan.id)
             .update({"plan.participants": auxParticipants})
             .then(() => {
-                console.log("Bien1")
             })
             .catch(e => {
-                console.log(e)
             });
 
         let auxParticipating = user.participating;
@@ -200,10 +210,8 @@ class Fire {
         .collection("users").doc(firebase.auth().currentUser.uid)
             .update({"participating": auxParticipating})
             .then(() => {
-                console.log("Bien2")
             })
             .catch(e => {
-                console.log(e)
             });
     };
 }

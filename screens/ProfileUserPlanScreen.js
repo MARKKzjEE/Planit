@@ -90,7 +90,7 @@ export default function ProfileUserPlanScreen({navigation, route})  {
             return(
                 <View style={{paddingVertical: 5,borderColor:constants.CORP_PINK,borderWidth:2,backgroundColor:"white",marginTop: 10}}>
                     {plan.plan.participants && (plan.plan.participants.map((item, i) => 
-                        <View key={i} style={{borderBottomWidth:2,borderColor:constants.CORP_GREY,marginHorizontal: 10,flexDirection: "row"}}>
+                        <View key={i} style={{marginBottom:10,borderBottomWidth:2,borderColor:constants.CORP_GREY,marginHorizontal: 10,flexDirection: "row"}}>
                             <Image style={{width: 50, height: 50, borderRadius: 18,}} source={{uri: item.image}}></Image>
                             <Text style={{marginLeft: 20,color: "grey"}} key={i}>{item.name}</Text>
                         </View>
@@ -248,7 +248,8 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         borderColor: "white",
         alignSelf: "center",
-        marginVertical: 7
+        marginVertical: 7,
+        backgroundColor: "white"
     },
     listUsers: {
         maxWidth: "100%",

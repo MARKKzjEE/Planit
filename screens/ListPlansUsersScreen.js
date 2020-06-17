@@ -19,6 +19,7 @@ export default function ListPlansUserScreen({navigation, route}) {
   
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
+      
       try {
           (async () => {
             loadPlans();
@@ -35,27 +36,25 @@ export default function ListPlansUserScreen({navigation, route}) {
     },[navigation]);
 
     const loadPlans = async () => {
-      let auxMerge = []
-      let auxPlans = []
       await firebase.firestore()
           .collection("users").doc(firebase.auth().currentUser.uid).get()
           .then((doc) => {
-            setList(doc.data().participating);
+            let auxMerge = []
+            setPlans([]);
+            for (var i=0; i < doc.data().participating.length; i++){
+              firebase.firestore().collection("plans").doc(doc.data().participating[i].id).get()
+              .then((doc) => {
+                auxMerge = {...doc.data(), id: doc.id};
+                setPlans(plans => [...plans, auxMerge]);
+              })
+              .catch((error) => {
+                  console.log(error);
+              });
+            }
         })
         .catch((error) => {
             console.log(error);
         });
-      for (var i=0; i < listIdPlans.length; i++){
-        await firebase.firestore().collection("plans").doc(listIdPlans[i].id).get()
-        .then((doc) => {
-          auxMerge = {...doc.data(), id: doc.id};
-          auxPlans.push(auxMerge);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-      }
-      setPlans(auxPlans);
     };
 
     //item.id para pasarle al boton la id del doc que debera mostrar por pantalla cuando se navegue
@@ -63,7 +62,7 @@ export default function ListPlansUserScreen({navigation, route}) {
       return(
         <View style={styles.feedItem}>
             <View style={styles.firstLine}>
-              <Image source={{uri: firebase.auth().currentUser.photoURL}} style={styles.avatar}></Image>
+              <Text> </Text>
               <Text style={{color: constants.CORP_PINK, fontWeight: "bold", fontSize: 18}}>{item.plan.name}</Text>
               {item.plan.isPrivate ? (
                 <Ionicons name="ios-lock" size={25} color={constants.CORP_PINK} style={styles.avatar}></Ionicons>
@@ -124,7 +123,6 @@ export default function ListPlansUserScreen({navigation, route}) {
               <Text style={{fontSize:20,fontWeight:"bold", color:constants.CORP_PINK}}>No te has unido a ningún plan!</Text>
             </View>
           )}
-          
         </View>
       );
     }

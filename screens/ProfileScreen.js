@@ -123,7 +123,7 @@ export default function ProfileScreen({navigation, route})  {
             </View>
 
             <View style={{width:"100%",flexDirection:"row", justifyContent:"space-evenly"}}>
-                <Text style={{color:"grey",fontWeight:"bold"}}>Planes creados: <Text style={{color:constants.CORP_PINK}}>{stats1}</Text></Text>
+                <Text style={{color:"grey",fontWeight:"bold"}}>Planes creados en activo: <Text style={{color:constants.CORP_PINK}}>{stats1}</Text></Text>
             </View>
             
             <View style={styles.imagesContainer}>

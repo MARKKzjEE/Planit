@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image, Alert, ScrollView, Dimensions, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import { CommonActions } from '@react-navigation/native'
 
 import * as constants from '../constants/constants';
 
@@ -45,10 +45,10 @@ export default function ProfilePlanScreen({navigation, route})  {
 
     const handleDelete = async () => {
         await Fire.shared
-            .deletePlan(plan.id)
+            .deletePlan(plan)
             .then( () => {
-                console.log("Plan eliminado")
-                navigation.goBack()
+                console.log("Plan eliminado");
+                navigation.goBack();
             })
             .catch((error) => {
                 console.log(error)
@@ -58,7 +58,7 @@ export default function ProfilePlanScreen({navigation, route})  {
     const ListUsers = () => {
         if(plan.plan.participants.length > 0) {
             return(
-                <View style={{paddingVertical: 5,borderColor:constants.CORP_PINK,borderWidth:2,backgroundColor:"white",marginTop: 10}}>
+                <View style={{borderRadius:10,paddingVertical: 5,borderColor:constants.CORP_PINK,borderWidth:2,backgroundColor:"white",marginTop: 10}}>
                     {plan.plan.participants && (plan.plan.participants.map((item, i) => 
                         <View key={i} style={{borderBottomWidth:2,borderColor:constants.CORP_GREY,marginHorizontal: 10,flexDirection: "row"}}>
                             <Image style={{width: 50, height: 50, borderRadius: 18,}} source={{uri: item.image}}></Image>
@@ -80,7 +80,6 @@ export default function ProfilePlanScreen({navigation, route})  {
     return (
         
         <View style={styles.container}>
-            {console.log(route) && console.log(navigation)}
             <View style={styles.userCreation}>
                 <View>
                     <Text style={styles.headersWhiteBig}>{plan.plan.name}</Text>
@@ -89,8 +88,8 @@ export default function ProfilePlanScreen({navigation, route})  {
                 </View>
             </View>
 
-            <View style={styles.infocontainer}>
-                <View style={{marginHorizontal:15}}>
+            <ScrollView style={styles.infocontainer}>
+                <View style={{marginHorizontal:15, marginBottom: 20}}>
                     <View style={styles.infoBottomWidth}>
                         <View style={{flexDirection:"row"}}>
                             <Ionicons name="ios-book" color={constants.CORP_PINK} size={25} style={{marginRight:15}}></Ionicons>
@@ -146,8 +145,14 @@ export default function ProfilePlanScreen({navigation, route})  {
                         
                         <ListUsers/>
                     </View>
+
+                    <View style={{alignItems:"center",marginVertical:40}}>
+                        <TouchableOpacity onPress={handleDelete} style={{borderRadius:5,paddingHorizontal:20,paddingVertical:10,backgroundColor:constants.CORP_PINK,marginRight: 20}}>
+                            <Text style={{color:"white", fontWeight:"bold",fontSize:15}}>Finalizar Plan</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         </View>
         
     );
@@ -172,7 +177,6 @@ const styles = StyleSheet.create({
     infocontainer: {
         width: "100%",
         marginBottom: 10,
-        alignItems: "center"
     },
     headersWhiteBig: {
         fontWeight: "bold",
@@ -197,7 +201,8 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         borderColor: "white",
         alignSelf: "center",
-        marginVertical: 7
+        marginVertical: 7,
+        backgroundColor: "white"
     },
     listUsers: {
         maxWidth: "100%",

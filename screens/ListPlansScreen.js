@@ -46,6 +46,9 @@ export default function ListPlansScreen({navigation, route}) {
                   });
                   setPlans(auxPlans);
               }
+              else {
+                setPlans(auxPlans);
+              }
           })
           .catch((error) => {
               console.log(error);
@@ -69,9 +72,9 @@ export default function ListPlansScreen({navigation, route}) {
             <View style={styles.secondLine}>
                 <Text style={{width: "90%"}}>{item.plan.description}</Text>
                 <TouchableOpacity style={styles.editButton} onPress={() => {
-                        navigation.push('ProfilePlanScreen', {
-                            plan: item
-                        });
+                        navigation.push('ProfilePlanScreen', { plan: item }
+                        );
+                        //{ onGoBack: () => loadMyPlans() }
                 }}>
                   <Ionicons name="ios-search" size={20} color="white"></Ionicons>
                 </TouchableOpacity>
@@ -105,8 +108,7 @@ export default function ListPlansScreen({navigation, route}) {
 
     return (
         <View style={styles.container}>
-          {console.log(route.state)}
-          { plans && plans.length > 0 ? (
+          { plans.length > 0 ? (
             <FlatList
               style={styles.feed}
               data={plans}
@@ -119,7 +121,6 @@ export default function ListPlansScreen({navigation, route}) {
               <Text style={{fontSize:20,fontWeight:"bold", color:constants.CORP_PINK}}>No tienes ningún plan creado!</Text>
             </View>
           )}
-          
         </View>
       );
     }
