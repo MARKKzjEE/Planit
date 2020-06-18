@@ -184,7 +184,7 @@ export default function PostScreen({navigation}) {
           </View>
 
           <View style={styles.containerSwitch}>
-            <Text style={styles.presetTextInputs}>Haz tu plan privado: </Text>
+            <Text style={styles.presetTextInputs}>Haz tu plan cerrado: </Text>
             <Switch
                 trackColor={{true:constants.CORP_PINK, false:"grey"}}
                 thumbColor={plan.isPrivate ? constants.CORP_PINK : constants.CORP_GREY}
